@@ -9,7 +9,7 @@ public class HowPanel extends Panel{
     private ImageButton musicOnButton, musicOffButton, homeButton;
     public HowPanel() {
 
-        super("bg/how.png");
+        super("bg/how-1.png");
 
         musicOnButton = new ImageButton("buttons/volume-on.png");
         musicOffButton = new ImageButton("buttons/volume-off.png");

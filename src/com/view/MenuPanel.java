@@ -22,7 +22,7 @@ public class MenuPanel extends Panel{
         super("bg/menu-panel.png");
 
         startButton = new ImageButton("buttons/start.png");
-        howItWorksButton = new ImageButton("buttons/info.png");
+        howItWorksButton = new ImageButton("buttons/about.png");
         exitButton = new ImageButton("buttons/exit.png");
 
         musicOnButton = new ImageButton("buttons/volume-on.png");
@@ -64,7 +64,7 @@ public class MenuPanel extends Panel{
 
     private void setListeners(){
         startButton.hover("buttons/start-hover.png", "buttons/start.png");
-        howItWorksButton.hover("buttons/info-hover.png", "buttons/info.png");
+        howItWorksButton.hover("buttons/about-hover.png", "buttons/about.png");
         exitButton.hover("buttons/exit-hover.png", "buttons/exit.png");
         aboutButton.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) { aboutPanel.setVisible(true); }
