@@ -113,30 +113,6 @@ public class InputPanel extends Panel {
             return this;
         }
     }
-    private class RoundedBorder implements Border {
-
-        private int radius;
-
-        public RoundedBorder(int radius) {
-            this.radius = radius;
-        }
-
-        @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            g.setColor(c.getBackground());
-            g.fillRoundRect(x, y, width, height, radius, radius);
-        }
-
-        @Override
-        public Insets getBorderInsets(Component c) {
-            return new Insets(radius, radius, radius, radius);
-        }
-
-        @Override
-        public boolean isBorderOpaque() {
-            return true;
-        }
-    }
 
     private void setListeners() {
         musicOnButton.hover("buttons/volume-off-hover.png", "buttons/volume-on.png");
