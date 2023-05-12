@@ -22,12 +22,12 @@ public class MenuPanel extends Panel{
         super("bg/menu-panel.png");
 
         startButton = new ImageButton("buttons/start.png");
-        howItWorksButton = new ImageButton("buttons/about.png");
+        howItWorksButton = new ImageButton("buttons/how-it-works.png");
         exitButton = new ImageButton("buttons/exit.png");
 
         musicOnButton = new ImageButton("buttons/volume-on.png");
         musicOffButton = new ImageButton("buttons/volume-off.png");
-        aboutButton = new ImageButton("buttons/how-it-works.png");
+        aboutButton = new ImageButton("buttons/about.png");
         aboutPanel = new Panel("bg/info-hover-label.png");
 
         startButton.setBounds(168, 603, 186, 81);
@@ -36,11 +36,12 @@ public class MenuPanel extends Panel{
         musicOnButton.setBounds(958, 37, 44, 44);
         musicOffButton.setBounds(958, 37, 44, 44);
         aboutButton.setBounds(1020, 37, 44, 44);
-        //aboutButtonHover.setBounds(1020, 25, 44, 44);
-        aboutPanel.setBounds(1054, 200, 320, 141);
-        aboutPanel.setVisible(false);
+        aboutPanel.setBounds(721, 59, 320, 141);
 
         musicOffButton.setVisible(false);
+        aboutPanel.setVisible(false);
+
+
 
         setListeners();
 
@@ -59,12 +60,11 @@ public class MenuPanel extends Panel{
         bgImage.add(aboutPanel);
 
         this.add(bgImage);
-
     }
 
     private void setListeners(){
         startButton.hover("buttons/start-hover.png", "buttons/start.png");
-        howItWorksButton.hover("buttons/about-hover.png", "buttons/about.png");
+        howItWorksButton.hover("buttons/how-it-works-hover.png", "buttons/how-it-works.png");
         exitButton.hover("buttons/exit-hover.png", "buttons/exit.png");
         aboutButton.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) { aboutPanel.setVisible(true); }
@@ -72,7 +72,7 @@ public class MenuPanel extends Panel{
         });
         musicOnButton.hover("buttons/volume-off-hover.png", "buttons/volume-on.png");
         musicOffButton.hover("buttons/volume-on-hover.png", "buttons/volume-off.png");
-        aboutButton.hover("buttons/how-it-works-hover.png", "buttons/how-it-works.png");
+        aboutButton.hover("buttons/about-hover.png", "buttons/about.png");
     }
 
     public static void main(String[] args) {
