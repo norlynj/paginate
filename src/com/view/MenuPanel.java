@@ -24,18 +24,20 @@ public class MenuPanel extends Panel{
         startButton = new ImageButton("buttons/start.png");
         howItWorksButton = new ImageButton("buttons/info.png");
         exitButton = new ImageButton("buttons/exit.png");
+
         musicOnButton = new ImageButton("buttons/volume-on.png");
         musicOffButton = new ImageButton("buttons/volume-off.png");
-        aboutButton = new ImageButton("buttons/about.png");
-        aboutPanel = new Panel("bg/about-hover-label.png");
+        aboutButton = new ImageButton("buttons/how-it-works.png");
+        aboutPanel = new Panel("bg/info-hover-label.png");
 
-        startButton.setBounds(380, 572, 152, 61);
-        howItWorksButton.setBounds(1023, 25, 47, 47);
-        exitButton.setBounds(572, 572, 152, 61);
-        musicOnButton.setBounds(920, 25, 47, 47);
-        musicOffButton.setBounds(920, 25, 47, 47);
-        aboutButton.setBounds(972, 25, 47, 47);
-        aboutPanel.setBounds(684, 49, 320, 141);
+        startButton.setBounds(168, 603, 186, 81);
+        howItWorksButton.setBounds(384, 603, 332, 81);
+        exitButton.setBounds(745, 603, 186, 81);
+        musicOnButton.setBounds(958, 37, 44, 44);
+        musicOffButton.setBounds(958, 37, 44, 44);
+        aboutButton.setBounds(1020, 37, 44, 44);
+        //aboutButtonHover.setBounds(1020, 25, 44, 44);
+        aboutPanel.setBounds(1054, 200, 320, 141);
         aboutPanel.setVisible(false);
 
         musicOffButton.setVisible(false);
@@ -69,7 +71,9 @@ public class MenuPanel extends Panel{
             public void mouseExited(MouseEvent e) { aboutPanel.setVisible(false); }
         });
         musicOnButton.hover("buttons/volume-off-hover.png", "buttons/volume-on.png");
-        musicOffButton.hover("buttons/volume-on-hover.png", "buttons/volume-off.png");    }
+        musicOffButton.hover("buttons/volume-on-hover.png", "buttons/volume-off.png");
+        aboutButton.hover("buttons/how-it-works-hover.png", "buttons/how-it-works.png");
+    }
 
     public static void main(String[] args) {
         MenuPanel m = new MenuPanel();

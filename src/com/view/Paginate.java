@@ -5,7 +5,7 @@ import view.component.Panel;
 
 import java.awt.*;
 
-public class Alloc8r {
+public class Paginate {
     private Frame frame;
     private MenuPanel menuPanel;
     private HowPanel howPanel;
@@ -16,11 +16,11 @@ public class Alloc8r {
     private CardLayout cardLayout;
     private AudioPlayer audio;
 
-    public Alloc8r(){
+    public Paginate(){
         audio = new AudioPlayer("bgmusic.wav");
         audio.play();
         audio.loop();
-        frame = new Frame("Alloc8r");
+        frame = new Frame("Paginate");
 
         // create Panels
         menuPanel = new MenuPanel();
