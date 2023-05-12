@@ -7,12 +7,9 @@ import view.component.Label;
 import view.component.Panel;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
 import java.awt.*;
 
 public class InputPanel extends Panel {
@@ -51,7 +48,7 @@ public class InputPanel extends Panel {
         pageReferenceField.setFont(new Font("Montserrat", Font.BOLD, 20));
         pageReferenceField.setBounds(333, 143, 426, 40);
 
-        frameNumField = new JTextField("3", 2);
+        frameNumField = new JTextField("4", 2);
         frameNumField.setName("frameNumField");
         frameNumField.setBorder(null);
         frameNumField.setHorizontalAlignment(SwingConstants.CENTER);
@@ -133,14 +130,14 @@ public class InputPanel extends Panel {
             try {
                 frameNumField.setText(String.valueOf(Integer.parseInt(frameNumField.getText()) + 1));
             } catch (NumberFormatException ex) {
-                frameNumField.setText("3");
+                frameNumField.setText("4");
             }
         });
         frameNumMinus.addActionListener(e -> {
             try {
                 frameNumField.setText(String.valueOf(Integer.parseInt(frameNumField.getText()) - 1));
             } catch (NumberFormatException ex) {
-                frameNumField.setText("3");
+                frameNumField.setText("4");
             }
         });
 
@@ -188,10 +185,10 @@ public class InputPanel extends Panel {
 
             private void validateInput() {
                 try {
+                    String str = input.getText();
                     if (input.getName().equals("frameNumField")) {
-                        String text = input.getText();
-                        int value = Integer.parseInt(text);
-                        if (value < FRAME_SIZE_MIN || value > FRAME_SIZE_MAX) {
+                        int value = Integer.parseInt(str);
+                        if (value <= FRAME_SIZE_MIN || value >= FRAME_SIZE_MAX) {
                             // If the value is out of range, highlight the text field
                             input.setBackground(new Color(255, 202, 202));
                             disableOutputButtons();
@@ -201,7 +198,31 @@ public class InputPanel extends Panel {
                             enableOutputButtons();
                         }
                     } else if(input.getName().equals("pageReferenceField")) {
-                        // check 2 things here: page reference length must be bet 10-40, string value must be 0-20
+                        // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 10-40, string value must be between 0-20
+                        if (str.matches("\\d+(,\\s\\d+)*")) {
+                            String[] parts = str.split(",\\s");
+                            if (parts.length >= STRING_LEN_MIN && parts.length <= STRING_LEN_MAX && parts[0].matches("\\d+") && parts[parts.length-1].matches("\\d+")) {
+                                // Split the input into an array of integers
+                                String[] nums = str.split(",\\s");
+                                for (String num : nums) {
+                                    int value = Integer.parseInt(num);
+                                    // Check that each integer value in the input is between 0 and 20
+                                    if (value <= STRING_VAL_MIN || value >= STRING_VAL_MAX) {
+                                        input.setBackground(new Color(255, 202, 202));
+                                        disableOutputButtons();
+                                    } else {
+                                        input.setBackground(UIManager.getColor("TextField.background"));
+                                        enableOutputButtons();
+                                    }
+                                }
+                            } else {
+                                input.setBackground(new Color(255, 202, 202));
+                                disableOutputButtons();
+                            }
+                        } else {
+                            input.setBackground(new Color(255, 202, 202));
+                            disableOutputButtons();
+                        }
                     }
                 } catch (NumberFormatException ex) {
                     // If the input cannot be parsed as an integer, highlight the text field
