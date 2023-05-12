@@ -16,6 +16,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 
 public class InputPanel extends Panel {
+    private int STRING_LEN_MIN = 10, STRING_LEN_MAX = 40, STRING_VAL_MIN = 0, STRING_VAL_MAX = 20, FRAME_SIZE_MIN = 3, FRAME_SIZE_MAX = 10;
     private ImageButton musicOnButton, musicOffButton, homeButton;
     private JComboBox algorithmChoice;
     private ImageButton frameNumPlus, frameNumMinus;
@@ -59,8 +60,9 @@ public class InputPanel extends Panel {
 
         frameNumPlus = new ImageButton("buttons/add.png");
         frameNumMinus = new ImageButton("buttons/minus.png");
-        frameNumPlus.setBounds(354, 267, 44, 40);
-        frameNumMinus.setBounds(469, 267, 44, 40);
+        frameNumMinus.setBounds(354, 267, 44, 40);
+        frameNumPlus.setBounds(469, 267, 44, 40);
+
 
         importButton = new ImageButton("buttons/from-text.png");
         randomizeButton = new ImageButton("buttons/randomize.png");
@@ -71,6 +73,8 @@ public class InputPanel extends Panel {
         randomizeButton.setBounds(673, 257, 58, 58);
         runButton.setBounds(785, 257, 58, 58);
         saveButton.setBounds(882, 258, 58, 58);
+
+//        disableOutputButtons();
 
         totalPageFault = new Label("Total Page Fault: ");
         totalPageFault.setBounds(412, 710, 225, 25);
@@ -124,6 +128,23 @@ public class InputPanel extends Panel {
         randomizeButton.hover("buttons/randomize-hover.png", "buttons/randomize.png");
         runButton.hover("buttons/run-hover.png", "buttons/run.png");
         saveButton.hover("buttons/save-hover.png", "buttons/save.png");
+
+        frameNumPlus.addActionListener(e -> {
+            try {
+                frameNumField.setText(String.valueOf(Integer.parseInt(frameNumField.getText()) + 1));
+            } catch (NumberFormatException ex) {
+                frameNumField.setText("3");
+            }
+        });
+        frameNumMinus.addActionListener(e -> {
+            try {
+                frameNumField.setText(String.valueOf(Integer.parseInt(frameNumField.getText()) - 1));
+            } catch (NumberFormatException ex) {
+                frameNumField.setText("3");
+            }
+        });
+
+        listenToUserInput();
     }
 
     public static void main(String[] args) {
@@ -142,6 +163,64 @@ public class InputPanel extends Panel {
             musicOffButton.setVisible(true);
         }
     }
+
+    private void listenToUserInput() {
+        inputValidator(pageReferenceField);
+        inputValidator(frameNumField);
+    }
+
+    private void inputValidator(JTextField input) {
+        input.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                validateInput();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                validateInput();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                validateInput();
+            }
+
+            private void validateInput() {
+                try {
+                    if (input.getName().equals("frameNumField")) {
+                        String text = input.getText();
+                        int value = Integer.parseInt(text);
+                        if (value < FRAME_SIZE_MIN || value > FRAME_SIZE_MAX) {
+                            // If the value is out of range, highlight the text field
+                            input.setBackground(new Color(255, 202, 202));
+                            disableOutputButtons();
+
+                        } else {
+                            input.setBackground(UIManager.getColor("TextField.background"));
+                            enableOutputButtons();
+                        }
+                    } else if(input.getName().equals("pageReferenceField")) {
+                        // check 2 things here: page reference length must be bet 10-40, string value must be 0-20
+                    }
+                } catch (NumberFormatException ex) {
+                    // If the input cannot be parsed as an integer, highlight the text field
+                    input.setBackground(new Color(255, 202, 202));
+                }
+            }
+        });
+    }
+
+    private void enableOutputButtons() {
+        runButton.setEnabled(true);
+        saveButton.setEnabled(true);
+    }
+
+    private void disableOutputButtons() {
+        runButton.setEnabled(false);
+        saveButton.setEnabled(false);
+    }
+
 
     public ImageButton getMusicOnButton() {
         return musicOnButton;
