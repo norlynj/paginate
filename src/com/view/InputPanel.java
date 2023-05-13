@@ -1,10 +1,11 @@
 package view;
 
-import model.CustomTableModel;
 import view.component.Frame;
 import view.component.ImageButton;
 import view.component.Label;
 import view.component.Panel;
+import view.component.CustomTable;
+import view.component.CustomTableModel;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -20,7 +21,9 @@ public class InputPanel extends Panel {
     private JTextField pageReferenceField, frameNumField;
     private ImageButton importButton, randomizeButton, runButton, saveButton;
     private JLabel totalPageFault;
-
+    private CustomTableModel tableModel;
+    private CustomTable table;
+    private JScrollPane scrollPane;
     public InputPanel() {
 
         super("bg/input-panel.png");
@@ -47,6 +50,7 @@ public class InputPanel extends Panel {
         pageReferenceField.setHorizontalAlignment(SwingConstants.CENTER);
         pageReferenceField.setFont(new Font("Montserrat", Font.BOLD, 20));
         pageReferenceField.setBounds(333, 143, 426, 40);
+        pageReferenceField.setToolTipText("Length must be 10-40. Value must be between 0 and 20");
 
         frameNumField = new JTextField("4", 2);
         frameNumField.setName("frameNumField");
@@ -73,6 +77,13 @@ public class InputPanel extends Panel {
 
 //        disableOutputButtons();
 
+        // table
+
+        tableModel = new CustomTableModel(10, 4);
+        table = new CustomTable(tableModel);
+        scrollPane = table.createTablePane(51, 367, 993, 355);
+
+        // result total page fault
         totalPageFault = new Label("Total Page Fault: ");
         totalPageFault.setBounds(412, 710, 225, 25);
         totalPageFault.setFont(new Font("Montserrat", Font.BOLD, 24));
@@ -94,6 +105,7 @@ public class InputPanel extends Panel {
         this.add(runButton);
         this.add(saveButton);
         this.add(totalPageFault);
+        this.add(scrollPane);
 
     }
 
@@ -197,6 +209,8 @@ public class InputPanel extends Panel {
                         } else {
                             input.setBackground(UIManager.getColor("TextField.background"));
                             enableOutputButtons();
+                            tableModel.setNumRows(value);
+
                         }
                     } else if(input.getName().equals("pageReferenceField")) {
                         // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 10-40, string value must be between 0-20
@@ -217,6 +231,7 @@ public class InputPanel extends Panel {
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
                                         enableOutputButtons();
+                                        tableModel.setColumnCount(parts.length);
                                     }
                                 }
                             } else {
@@ -234,6 +249,10 @@ public class InputPanel extends Panel {
                 }
             }
         });
+    }
+
+    private void setTable() {
+
     }
 
     private void enableOutputButtons() {
