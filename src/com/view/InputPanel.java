@@ -259,7 +259,7 @@ public class InputPanel extends Panel {
                         }
                     }
 
-                    if (frameSizeValid && stringValid) {
+                    if (frameSizeValid || stringValid) {
                         enableOutputButtons();
                     }
                 } catch (NumberFormatException ex) {
