@@ -1,6 +1,7 @@
 package view;
 
 import model.PageReferenceString;
+import model.FileReader;
 import view.component.Frame;
 import view.component.ImageButton;
 import view.component.Label;
@@ -11,8 +12,12 @@ import view.component.CustomTableModel;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -269,6 +274,36 @@ public class InputPanel extends Panel {
         randomizeButton.addActionListener( e -> {
             pageReferenceField.setText(pageRefString.random()); // sets string to random
             frameNumField.setText(Integer.toString(new Random().nextInt(6) + 4));
+        });
+
+        importButton.addActionListener( e -> {
+            String resourcePath = "/resources/text/";
+            URL resourceUrl = InputPanel.class.getResource(resourcePath);
+
+            // Convert the URL to a file object
+            assert resourceUrl != null;
+            File resourceFile = new File(resourceUrl.getPath());
+            JFileChooser fileChooser = new JFileChooser(resourceFile);
+            fileChooser.setDialogTitle("Select text file");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
+            fileChooser.setFileFilter(filter);
+            int returnValue = fileChooser.showOpenDialog(null);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File inputFile = fileChooser.getSelectedFile();
+
+                try {
+                    FileReader fr = new FileReader();
+                    fr.readInputFromFile(inputFile);
+                    ArrayList<Integer> inputList = fr.getPageRefString();
+                    System.out.println("Input: " + inputList);
+                    pageRefString.setString(inputList);
+                    pageReferenceField.setText(pageRefString.getString()); // sets string to random
+                    frameNumField.setText(Integer.toString(fr.getFrameNumber()));
+
+                } catch (FileNotFoundException ex) {
+                    System.out.println("File not found.");
+                }
+            }
         });
 
     }
