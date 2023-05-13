@@ -123,24 +123,6 @@ public class InputPanel extends Panel {
     }
 
 
-    // UI
-    private static class CustomComboBoxRenderer extends BasicComboBoxRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            setHorizontalAlignment(SwingConstants.CENTER);
-            if (isSelected) {
-                setBackground(new Color(232, 160, 221)); // set selected item background color
-                setForeground(new Color(77,58,104)); // set item text color
-            } else {
-                setBackground(new Color(77,58,104)); // set unselected item background color
-                setForeground(Color.WHITE); // set item text color
-            }
-            setFont(new Font("Montserrat", Font.BOLD, 14));
-            return this;
-        }
-    }
-
     private void setListeners() {
         musicOnButton.hover("buttons/volume-off-hover.png", "buttons/volume-on.png");
         musicOffButton.hover("buttons/volume-on-hover.png", "buttons/volume-off.png");
@@ -169,23 +151,6 @@ public class InputPanel extends Panel {
 
         listenToUserInput();
         listenToInputFunctions();
-    }
-
-    public static void main(String[] args) {
-        InputPanel m = new InputPanel();
-        Frame frame = new Frame("Input Panel");
-        frame.add(m);
-        frame.setVisible(true);
-    }
-
-    public void musicClick() {
-        if (musicOffButton.isVisible()){
-            musicOnButton.setVisible(true);
-            musicOffButton.setVisible(false);
-        } else {
-            musicOnButton.setVisible(false);
-            musicOffButton.setVisible(true);
-        }
     }
 
     private void listenToUserInput() {
@@ -320,6 +285,41 @@ public class InputPanel extends Panel {
     }
     public ImageButton getHomeButton() {
         return homeButton;
+    }
+
+    public static void main(String[] args) {
+        InputPanel m = new InputPanel();
+        Frame frame = new Frame("Input Panel");
+        frame.add(m);
+        frame.setVisible(true);
+    }
+
+    public void musicClick() {
+        if (musicOffButton.isVisible()){
+            musicOnButton.setVisible(true);
+            musicOffButton.setVisible(false);
+        } else {
+            musicOnButton.setVisible(false);
+            musicOffButton.setVisible(true);
+        }
+    }
+
+    // UI
+    private static class CustomComboBoxRenderer extends BasicComboBoxRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            setHorizontalAlignment(SwingConstants.CENTER);
+            if (isSelected) {
+                setBackground(new Color(232, 160, 221)); // set selected item background color
+                setForeground(new Color(77,58,104)); // set item text color
+            } else {
+                setBackground(new Color(77,58,104)); // set unselected item background color
+                setForeground(Color.WHITE); // set item text color
+            }
+            setFont(new Font("Montserrat", Font.BOLD, 14));
+            return this;
+        }
     }
 }
 
