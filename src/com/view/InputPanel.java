@@ -117,7 +117,7 @@ public class InputPanel extends Panel {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             setHorizontalAlignment(SwingConstants.CENTER);
             if (isSelected) {
-                setBackground(new Color(223, 235, 246)); // set selected item background color
+                setBackground(new Color(232, 160, 221)); // set selected item background color
                 setForeground(new Color(77,58,104)); // set item text color
             } else {
                 setBackground(new Color(77,58,104)); // set unselected item background color

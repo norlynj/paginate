@@ -3,16 +3,16 @@ package view.component;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.*;
 import java.awt.*;
 
 public class CustomTable extends JTable {
     private final Color TABLE_PANE_COLOR = new Color(247, 245, 245);
     private final Font TABLE_FONT = new Font("Montserrat", Font.PLAIN, 18);
 
+    private Border cellBorder;
 
     public CustomTable(CustomTableModel tableModel) {
         super(tableModel);
@@ -22,12 +22,46 @@ public class CustomTable extends JTable {
         //Set header
         setTableHeader(null);
 
-
         //Set text to center
         setCenter();
-        setBorder(BorderFactory.createLineBorder(new Color(247, 245, 245), 5));
+
+        setShowGrid(false);
+        setIntercellSpacing(new Dimension(0, 0));
+
+        // Initialize the cell border
+
+
+        // Add a table model listener to update the cell renderer
+        tableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                // Update the cell renderer for all cells in the table
+                for (int row = 0; row < getRowCount(); row++) {
+                    for (int col = 0; col < getColumnCount(); col++) {
+                        updateCellRenderer(row, col);
+                    }
+                }
+            }
+        });
     }
 
+    @Override
+    public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+        Component component = super.prepareRenderer(renderer, row, column);
+
+        int marginSize = 8;
+        // Set the cell border
+        if (getColumnCount() > 20 && getColumnCount() < 30) {
+            marginSize = 3;
+        } else if (getColumnCount() >= 30) {
+            marginSize = 2;
+        }
+        Border outerBorder = BorderFactory.createMatteBorder(1, marginSize, 1, marginSize, new Color(247, 245, 245)); // Change outer border color here
+        Border innerBorder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK); // Change inner border color here
+        ((JComponent) component).setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
+
+        return component;
+    }
 
     public TableCellEditor getCellEditor() {
         JTextField f = new JTextField();
@@ -53,12 +87,17 @@ public class CustomTable extends JTable {
         return scrollPane;
     }
 
+    private void updateCellRenderer(int row, int col) {
+        try {
+            setIntercellSpacing(new Dimension(0, 0));
+        } catch (Exception ex) {
+
+        }
+    }
+
     @Override
     public boolean isCellEditable(int row, int column) {
         setCellSelectionEnabled(false);
         return false;
     }
-
-
-
 }
