@@ -13,10 +13,8 @@ public class OutputPanel extends Panel{
         musicOffButton = new ImageButton("buttons/volume-off.png");
         homeButton = new ImageButton("buttons/home.png");
 
-        musicOnButton.setBounds(945, 25, 47, 47);
-        musicOffButton.setBounds(945, 25, 47, 47);
-        homeButton.setBounds(1010, 25, 47, 47);
-
+        musicOnButton.setBounds(958, 37, 44, 44);
+        musicOffButton.setBounds(958, 37, 44, 44);
 
         setListeners();
 

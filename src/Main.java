@@ -1,8 +1,8 @@
-import view.Alloc8r;
+import view.Paginate;
 
 public class Main {
     public static void main(String[] args) {
-        new Alloc8r();
+        new Paginate();
 //        System.exit(0);
     }
 }
