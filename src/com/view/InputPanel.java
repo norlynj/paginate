@@ -199,6 +199,7 @@ public class InputPanel extends Panel {
             private void validateInput() {
                 try {
                     String str = input.getText();
+                    boolean frameSizeValid = false, stringValid = false ;
                     if (input.getName().equals("frameNumField")) {
                         int value = Integer.parseInt(str);
                         if (value <= FRAME_SIZE_MIN || value >= FRAME_SIZE_MAX) {
@@ -208,7 +209,7 @@ public class InputPanel extends Panel {
 
                         } else {
                             input.setBackground(UIManager.getColor("TextField.background"));
-                            enableOutputButtons();
+                            frameSizeValid = true;
                             tableModel.setNumRows(value);
 
                         }
@@ -230,7 +231,7 @@ public class InputPanel extends Panel {
                                         disableOutputButtons();
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
-                                        enableOutputButtons();
+                                        stringValid = true;
                                         tableModel.setColumnCount(parts.length);
                                     }
                                 }
@@ -242,6 +243,10 @@ public class InputPanel extends Panel {
                             input.setBackground(new Color(255, 202, 202));
                             disableOutputButtons();
                         }
+                    }
+
+                    if (frameSizeValid && stringValid) {
+                        enableOutputButtons();
                     }
                 } catch (NumberFormatException ex) {
                     // If the input cannot be parsed as an integer, highlight the text field
