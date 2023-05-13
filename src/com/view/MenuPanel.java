@@ -54,10 +54,10 @@ public class MenuPanel extends Panel{
         bgImage.add(startButton);
         bgImage.add(howItWorksButton);
         bgImage.add(exitButton);
+        bgImage.add(aboutPanel);
         bgImage.add(musicOnButton);
         bgImage.add(musicOffButton);
         bgImage.add(aboutButton);
-        bgImage.add(aboutPanel);
 
         this.add(bgImage);
     }
