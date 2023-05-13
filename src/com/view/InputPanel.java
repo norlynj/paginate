@@ -86,15 +86,10 @@ public class InputPanel extends Panel {
         runButton.setBounds(785, 257, 58, 58);
         saveButton.setBounds(882, 258, 58, 58);
 
-//        disableOutputButtons();
-
-        // table
-
         tableModel = new CustomTableModel(10, 4);
         table = new CustomTable(tableModel);
         scrollPane = table.createTablePane(51, 380, 993, 355);
 
-        // result total page fault
         totalPageFault = new Label("Total Page Fault: ");
         totalPageFault.setBounds(412, 700, 225, 25);
         totalPageFault.setFont(new Font("Montserrat", Font.BOLD, 24));
