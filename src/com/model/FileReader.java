@@ -64,6 +64,8 @@ public class FileReader {
                 System.out.println("Error reading the file");
                 return false;
             }
+        } else {
+            return false;
         }
         if (invalid) {
             JOptionPane.showMessageDialog(null, "Length must be 10 to 40 while values must be between 0 and 20 ");
