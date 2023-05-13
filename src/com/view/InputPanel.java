@@ -277,33 +277,19 @@ public class InputPanel extends Panel {
         });
 
         importButton.addActionListener( e -> {
-            String resourcePath = "/resources/text/";
-            URL resourceUrl = InputPanel.class.getResource(resourcePath);
-
-            // Convert the URL to a file object
-            assert resourceUrl != null;
-            File resourceFile = new File(resourceUrl.getPath());
-            JFileChooser fileChooser = new JFileChooser(resourceFile);
-            fileChooser.setDialogTitle("Select text file");
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
-            fileChooser.setFileFilter(filter);
-            int returnValue = fileChooser.showOpenDialog(null);
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File inputFile = fileChooser.getSelectedFile();
-
-                try {
-                    FileReader fr = new FileReader();
-                    fr.readInputFromFile(inputFile);
+            FileReader fr = new FileReader();
+            try {
+                if (fr.readInputFromFile()) {
                     ArrayList<Integer> inputList = fr.getPageRefString();
                     System.out.println("Input: " + inputList);
                     pageRefString.setString(inputList);
                     pageReferenceField.setText(pageRefString.getString()); // sets string to random
                     frameNumField.setText(Integer.toString(fr.getFrameNumber()));
-
-                } catch (FileNotFoundException ex) {
-                    System.out.println("File not found.");
                 }
+            } catch (FileNotFoundException ex) {
+                throw new RuntimeException(ex);
             }
+
         });
 
     }
