@@ -1,5 +1,6 @@
 package view;
 
+import model.PageReferenceString;
 import view.component.Frame;
 import view.component.ImageButton;
 import view.component.Label;
@@ -12,6 +13,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 public class InputPanel extends Panel {
     private int STRING_LEN_MIN = 10, STRING_LEN_MAX = 40, STRING_VAL_MIN = 0, STRING_VAL_MAX = 20, FRAME_SIZE_MIN = 3, FRAME_SIZE_MAX = 10;
@@ -24,6 +28,7 @@ public class InputPanel extends Panel {
     private CustomTableModel tableModel;
     private CustomTable table;
     private JScrollPane scrollPane;
+    private PageReferenceString pageRefString;
     public InputPanel() {
 
         super("bg/input-panel.png");
@@ -91,6 +96,8 @@ public class InputPanel extends Panel {
         disableOutputButtons();
         setListeners();
 
+        pageRefString = new PageReferenceString();
+
         //Add components to frame
         this.add(musicOnButton);
         this.add(musicOffButton);
@@ -155,6 +162,7 @@ public class InputPanel extends Panel {
         });
 
         listenToUserInput();
+        listenToInputFunctions();
     }
 
     public static void main(String[] args) {
@@ -232,6 +240,7 @@ public class InputPanel extends Panel {
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
                                         stringValid = true;
+                                        pageRefString.setString(new ArrayList<>(Arrays.asList(nums)));
                                         tableModel.setColumnCount(parts.length);
                                     }
                                 }
@@ -254,6 +263,14 @@ public class InputPanel extends Panel {
                 }
             }
         });
+    }
+
+    public void listenToInputFunctions() {
+        randomizeButton.addActionListener( e -> {
+            pageReferenceField.setText(pageRefString.random()); // sets string to random
+            frameNumField.setText(Integer.toString(new Random().nextInt(6) + 4));
+        });
+
     }
 
     private void setTable() {
