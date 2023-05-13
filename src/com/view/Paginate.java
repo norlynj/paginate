@@ -49,7 +49,7 @@ public class Paginate {
     }
 
     public void listenToMenu() {
-        menuPanel.getStartButton().addActionListener(e -> cardLayout.show(contentPane, "inputDecisionPanel" ));
+        menuPanel.getStartButton().addActionListener(e -> cardLayout.show(contentPane, "inputPanel" ));
         menuPanel.getHowItWorksButton().addActionListener(e -> cardLayout.show(contentPane, "howPanel" ));
         menuPanel.getExitButton().addActionListener(e -> System.exit(0));
         menuPanel.getMusicOnButton().addActionListener(e -> soundClick());
