@@ -85,7 +85,7 @@ public class InputPanel extends Panel {
 
         // result total page fault
         totalPageFault = new Label("Total Page Fault: ");
-        totalPageFault.setBounds(412, 710, 225, 25);
+        totalPageFault.setBounds(412, 700, 225, 25);
         totalPageFault.setFont(new Font("Montserrat", Font.BOLD, 24));
 
         disableOutputButtons();
