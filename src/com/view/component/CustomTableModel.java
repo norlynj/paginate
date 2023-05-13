@@ -7,10 +7,6 @@ import java.util.Set;
 public class CustomTableModel extends DefaultTableModel {
 
     private Set<Integer> priorityNumbers = new HashSet<>();
-    private int maxBurstTime = 30;
-    private int maxArrivalTime = 30;
-    private int maxPriorityNumber = 20;
-    private int maxTimeQuantum = 10;
 
     public CustomTableModel(int columnCount, int rowCount) {
         super(rowCount, columnCount);

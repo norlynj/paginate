@@ -12,15 +12,10 @@ import java.awt.*;
 public class CustomTable extends JTable {
     private final Color TABLE_PANE_COLOR = new Color(247, 245, 245);
     private final Font TABLE_FONT = new Font("Montserrat", Font.PLAIN, 18);
-    private boolean editable = true;
+
 
     public CustomTable(CustomTableModel tableModel) {
-        this(tableModel, true);
-    }
-
-    public CustomTable(CustomTableModel tableModel, boolean editable) {
         super(tableModel);
-        this.editable = editable;
         setRowHeight(30);
         setFont(TABLE_FONT);
 
@@ -60,8 +55,8 @@ public class CustomTable extends JTable {
 
     @Override
     public boolean isCellEditable(int row, int column) {
-        setCellSelectionEnabled(!editable); // disable selection
-        return editable;
+        setCellSelectionEnabled(false);
+        return false;
     }
 
 
