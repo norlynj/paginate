@@ -77,6 +77,7 @@ public class InputPanel extends Panel {
         totalPageFault.setBounds(412, 710, 225, 25);
         totalPageFault.setFont(new Font("Montserrat", Font.BOLD, 24));
 
+        disableOutputButtons();
         setListeners();
 
         //Add components to frame
@@ -201,7 +202,10 @@ public class InputPanel extends Panel {
                         // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 10-40, string value must be between 0-20
                         if (str.matches("\\d+(,\\s\\d+)*")) {
                             String[] parts = str.split(",\\s");
-                            if (parts.length >= STRING_LEN_MIN && parts.length <= STRING_LEN_MAX && parts[0].matches("\\d+") && parts[parts.length-1].matches("\\d+")) {
+                            if (parts.length >= STRING_LEN_MIN &&
+                                    parts.length <= STRING_LEN_MAX &&
+                                    parts[0].matches("\\d+") &&
+                                    parts[parts.length-1].matches("\\d+")) {
                                 // Split the input into an array of integers
                                 String[] nums = str.split(",\\s");
                                 for (String num : nums) {
