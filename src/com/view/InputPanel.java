@@ -34,6 +34,7 @@ public class InputPanel extends Panel {
     private CustomTable table;
     private JScrollPane scrollPane;
     private PageReferenceString pageRefString;
+    private boolean validInputs = false;
     public InputPanel() {
 
         super("bg/input-panel.png");
@@ -52,7 +53,7 @@ public class InputPanel extends Panel {
         algorithmChoice.setBackground(new Color(77,58,104));
         algorithmChoice.setForeground(Color.white);
         algorithmChoice.setFont(new Font("Montserrat", Font.BOLD, 18));
-        algorithmChoice.setBounds(155, 264, 145, 44);
+        algorithmChoice.setBounds(150, 264, 150, 44);
 
         pageReferenceField = new JTextField("", 2);
         pageReferenceField.setName("pageReferenceField");
@@ -212,19 +213,22 @@ public class InputPanel extends Panel {
             private void validateInput() {
                 try {
                     String str = input.getText();
-                    boolean frameSizeValid = false, stringValid = false ;
+                    boolean valid = false ;
                     if (input.getName().equals("frameNumField")) {
                         int value = Integer.parseInt(str);
                         if (value <= FRAME_SIZE_MIN || value >= FRAME_SIZE_MAX) {
                             // If the value is out of range, highlight the text field
                             input.setBackground(new Color(255, 202, 202));
                             disableOutputButtons();
+                            validInputs = false;
 
                         } else {
                             input.setBackground(UIManager.getColor("TextField.background"));
-                            frameSizeValid = true;
                             tableModel.setNumRows(value);
-
+                            enableOutputButtons();
+                            if (validInputs) {
+                                enableOutputButtons();
+                            }
                         }
                     } else if(input.getName().equals("pageReferenceField")) {
                         // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 10-40, string value must be between 0-20
@@ -242,11 +246,14 @@ public class InputPanel extends Panel {
                                     if (value <= STRING_VAL_MIN || value >= STRING_VAL_MAX) {
                                         input.setBackground(new Color(255, 202, 202));
                                         disableOutputButtons();
+                                        validInputs = false;
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
-                                        stringValid = true;
                                         pageRefString.setString(new ArrayList<>(Arrays.asList(nums)));
                                         tableModel.setColumnCount(parts.length);
+                                        if (validInputs) {
+                                            enableOutputButtons();
+                                        }
                                     }
                                 }
                             } else {
@@ -257,10 +264,6 @@ public class InputPanel extends Panel {
                             input.setBackground(new Color(255, 202, 202));
                             disableOutputButtons();
                         }
-                    }
-
-                    if (frameSizeValid || stringValid) {
-                        enableOutputButtons();
                     }
                 } catch (NumberFormatException ex) {
                     // If the input cannot be parsed as an integer, highlight the text field
