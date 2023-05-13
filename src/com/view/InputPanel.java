@@ -81,7 +81,7 @@ public class InputPanel extends Panel {
 
         tableModel = new CustomTableModel(10, 4);
         table = new CustomTable(tableModel);
-        scrollPane = table.createTablePane(51, 367, 993, 355);
+        scrollPane = table.createTablePane(51, 380, 993, 355);
 
         // result total page fault
         totalPageFault = new Label("Total Page Fault: ");
