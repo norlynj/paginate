@@ -286,7 +286,7 @@ public class InputPanel extends Panel {
                 simulator = new FIFO(pageRefString, frameNum);
                 break;
             case "LRU":
-                simulator = new LRU(pageRefString);
+                simulator = new LRU(pageRefString, frameNum);
                 break;
             case "Second Chance (SC)":
                 simulator = new SecondChance(pageRefString);
