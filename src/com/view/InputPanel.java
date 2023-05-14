@@ -203,8 +203,8 @@ public class InputPanel extends Panel {
                                 // Split the input into an array of integers
                                 String[] nums = str.split(",\\s");
                                 ArrayList<Integer> numList = new ArrayList<>();
-                                for (int i = 0; i < nums.length; i++) {
-                                    int value = Integer.parseInt(nums[i]);
+                                for (String num : nums) {
+                                    int value = Integer.parseInt(num);
                                     numList.add(value);
                                     // Check that each integer value in the input is between 0 and 20
                                     if (value <= STRING_VAL_MIN || value >= STRING_VAL_MAX) {
