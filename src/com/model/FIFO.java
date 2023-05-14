@@ -48,8 +48,8 @@ public class FIFO extends PageReplacementSimulator {
             } else {
                 if (!s.contains(pages.get(i))) {
                     int val = indexes.peek();
-                    currentFrame = s.indexOf(val);
                     indexes.poll();
+                    currentFrame = s.indexOf(val);
                     s.set(currentFrame, pages.get(i));
                     indexes.add(pages.get(i));
                     pf++;

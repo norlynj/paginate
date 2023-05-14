@@ -40,9 +40,8 @@ public class LRU extends PageReplacementSimulator{
                         }
                     }
                     currentFrame = s.indexOf(val);
-                    s.remove(currentFrame);
+                    s.set(currentFrame, pages.get(i));
                     indexes.remove(val);
-                    s.add(pages.get(i));
 
                     // Increment page faults
                     pf++;

@@ -318,6 +318,7 @@ public class InputPanel extends Panel {
                 table.setValueAt(step.getStatus(), table.getRowCount() - 1, i);
             }
         }
+        totalPageFault.setText("Page Fault: " + String.valueOf(simulator.getPageFaults()));
 
 
 
