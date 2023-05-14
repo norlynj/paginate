@@ -1,15 +1,14 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class PageReferenceString {
     private int STRING_LEN_MIN = 10, STRING_LEN_MAX = 40, STRING_VAL_MIN = 0, STRING_VAL_MAX = 20;
-    ArrayList<Integer> string;
+    ArrayList<Integer> pages;
 
     public void setString(ArrayList pageRefString) {
-        this.string = pageRefString;
+        this.pages = pageRefString;
     }
 
     public String random() {
@@ -21,15 +20,15 @@ public class PageReferenceString {
             int value = random.nextInt(19) + 1;; // Generate random integer between 0 and 20, meaning 1-19
             list.add(value);
         }
-        this.string = list;
+        this.pages = list;
         return String.join(", ", list.stream().map(Object::toString).toArray(String[]::new));
     }
 
-    public ArrayList getStringArray() {
-        return string;
+    public ArrayList<Integer> getPages() {
+        return pages;
     }
 
     public String getString() {
-        return String.join(", ", this.string.stream().map(Object::toString).toArray(String[]::new));
+        return String.join(", ", this.pages.stream().map(Object::toString).toArray(String[]::new));
     }
 }
