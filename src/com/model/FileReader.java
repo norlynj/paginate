@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class FileReader {
 
-    ArrayList pageRefString;
+    private ArrayList<Integer> pageRefString;
     int frameNumber;
 
     public boolean readInputFromFile() throws FileNotFoundException {
