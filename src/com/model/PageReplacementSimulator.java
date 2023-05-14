@@ -7,6 +7,7 @@ import java.util.Queue;
 
 public class PageReplacementSimulator {
     PageReferenceString string;
+    ArrayList<Step> steps;
     int frameNumber;
     int pageFaults;
 
@@ -16,5 +17,21 @@ public class PageReplacementSimulator {
 
     public void simulate() {
 
+    }
+
+    public PageReferenceString getString() {
+        return string;
+    }
+
+    public ArrayList<Step> getSteps() {
+        return steps;
+    }
+
+    public int getFrameNumber() {
+        return frameNumber;
+    }
+
+    public int getPageFaults() {
+        return pageFaults;
     }
 }

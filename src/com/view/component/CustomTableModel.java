@@ -6,20 +6,8 @@ import java.util.Set;
 
 public class CustomTableModel extends DefaultTableModel {
 
-    private Set<Integer> priorityNumbers = new HashSet<>();
-
     public CustomTableModel(int columnCount, int rowCount) {
         super(rowCount, columnCount);
-    }
-
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        return Integer.class;
-    }
-
-    @Override
-    public boolean isCellEditable(int row, int column) {
-        return column != 0;
     }
 
     public void resetTable() {
@@ -28,7 +16,6 @@ public class CustomTableModel extends DefaultTableModel {
                 setValueAt(null, i, j);
             }
         }
-        priorityNumbers.clear();
     }
 
 }

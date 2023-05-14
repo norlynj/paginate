@@ -300,6 +300,19 @@ public class InputPanel extends Panel {
                 break;
         }
         simulator.simulate();
+        populateResults();
+    }
+
+    private void populateResults() {
+        tableModel.resetTable();
+        ArrayList<Step> steps = simulator.getSteps();
+        for(int i = 0; i < steps.size(); i++) {
+            Step step = steps.get(i);
+            for(int j = 0; j < step.getPagesProcessed().size(); j++) {
+                table.setValueAt(step.getPagesProcessed().get(j), j, i);
+            }
+        }
+
     }
 
     private void enableOutputButtons() {

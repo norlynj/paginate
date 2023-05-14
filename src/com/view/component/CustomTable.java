@@ -90,6 +90,7 @@ public class CustomTable extends JTable {
     private void updateCellRenderer(int row, int col) {
         try {
             setIntercellSpacing(new Dimension(0, 0));
+            setCenter();
         } catch (Exception ex) {
 
         }
