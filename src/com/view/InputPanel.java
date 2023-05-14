@@ -34,7 +34,7 @@ public class InputPanel extends Panel {
     private JScrollPane scrollPane;
     private PageReferenceString pageRefString;
     PageReplacementSimulator simulator;
-    private boolean validInputs = false;
+    private boolean validStringInputs = false, validFrameNum = false;
     public InputPanel() {
 
         super("bg/input-panel.png");
@@ -181,15 +181,16 @@ public class InputPanel extends Panel {
                             // If the value is out of range, highlight the text field
                             input.setBackground(new Color(255, 202, 202));
                             disableOutputButtons();
-                            validInputs = false;
+                            validFrameNum = false;
 
                         } else {
                             input.setBackground(UIManager.getColor("TextField.background"));
                             tableModel.setNumRows(value);
-                            enableOutputButtons();
-                            if (validInputs) {
+                            if (validStringInputs) {
                                 enableOutputButtons();
                             }
+                            validFrameNum = true;
+
                         }
                     } else if(input.getName().equals("pageReferenceField")) {
                         // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 10-40, string value must be between 0-20
@@ -207,23 +208,26 @@ public class InputPanel extends Panel {
                                     if (value <= STRING_VAL_MIN || value >= STRING_VAL_MAX) {
                                         input.setBackground(new Color(255, 202, 202));
                                         disableOutputButtons();
-                                        validInputs = false;
+                                        validStringInputs = false;
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
                                         pageRefString.setString(new ArrayList<>(Arrays.asList(nums)));
                                         tableModel.setColumnCount(parts.length);
-                                        if (validInputs) {
+                                        if (validFrameNum) {
                                             enableOutputButtons();
                                         }
+                                        validStringInputs = true;
                                     }
                                 }
                             } else {
                                 input.setBackground(new Color(255, 202, 202));
                                 disableOutputButtons();
+                                validStringInputs = false;
                             }
                         } else {
                             input.setBackground(new Color(255, 202, 202));
                             disableOutputButtons();
+                            validStringInputs = false;
                         }
                     }
                 } catch (NumberFormatException ex) {
