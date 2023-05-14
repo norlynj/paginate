@@ -5,9 +5,9 @@ import java.util.Random;
 
 public class PageReferenceString {
     private int STRING_LEN_MIN = 10, STRING_LEN_MAX = 40, STRING_VAL_MIN = 0, STRING_VAL_MAX = 20;
-    ArrayList<Integer> pages;
+    private ArrayList<Integer> pages;
 
-    public void setString(ArrayList pageRefString) {
+    public void setString(ArrayList<Integer> pageRefString) {
         this.pages = pageRefString;
     }
 

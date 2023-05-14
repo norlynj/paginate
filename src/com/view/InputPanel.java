@@ -202,8 +202,10 @@ public class InputPanel extends Panel {
                                     parts[parts.length-1].matches("\\d+")) {
                                 // Split the input into an array of integers
                                 String[] nums = str.split(",\\s");
-                                for (String num : nums) {
-                                    int value = Integer.parseInt(num);
+                                ArrayList<Integer> numList = new ArrayList<>();
+                                for (int i = 0; i < nums.length; i++) {
+                                    int value = Integer.parseInt(nums[i]);
+                                    numList.add(value);
                                     // Check that each integer value in the input is between 0 and 20
                                     if (value <= STRING_VAL_MIN || value >= STRING_VAL_MAX) {
                                         input.setBackground(new Color(255, 202, 202));
@@ -211,7 +213,7 @@ public class InputPanel extends Panel {
                                         validStringInputs = false;
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
-                                        pageRefString.setString(new ArrayList<>(Arrays.asList(nums)));
+                                        pageRefString.setString(numList);
                                         tableModel.setColumnCount(parts.length);
                                         if (validFrameNum) {
                                             enableOutputButtons();
@@ -275,11 +277,11 @@ public class InputPanel extends Panel {
     }
 
     private void simulate() {
-        simulator = new FIFO(pageRefString);
         String selected = (String) algorithmChoice.getSelectedItem();
+        int frameNum = Integer.parseInt(frameNumField.getText());
         switch (selected) {
             case "FIFO":
-                simulator = new FIFO(pageRefString);
+                simulator = new FIFO(pageRefString, frameNum);
                 break;
             case "LRU":
                 simulator = new LRU(pageRefString);
@@ -297,6 +299,7 @@ public class InputPanel extends Panel {
                 simulator = new MFU(pageRefString);
                 break;
         }
+        simulator.simulate();
     }
 
     private void enableOutputButtons() {
