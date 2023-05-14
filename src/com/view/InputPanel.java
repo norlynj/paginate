@@ -177,7 +177,7 @@ public class InputPanel extends Panel {
                     boolean valid = false ;
                     if (input.getName().equals("frameNumField")) {
                         int value = Integer.parseInt(str);
-                        if (value <= FRAME_SIZE_MIN || value >= FRAME_SIZE_MAX) {
+                        if (value < FRAME_SIZE_MIN || value > FRAME_SIZE_MAX) {
                             // If the value is out of range, highlight the text field
                             input.setBackground(new Color(255, 202, 202));
                             disableOutputButtons();
@@ -207,7 +207,7 @@ public class InputPanel extends Panel {
                                     int value = Integer.parseInt(num);
                                     numList.add(value);
                                     // Check that each integer value in the input is between 0 and 20
-                                    if (value <= STRING_VAL_MIN || value >= STRING_VAL_MAX) {
+                                    if (value < STRING_VAL_MIN || value > STRING_VAL_MAX) {
                                         input.setBackground(new Color(255, 202, 202));
                                         disableOutputButtons();
                                         validStringInputs = false;
