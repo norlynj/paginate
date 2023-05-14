@@ -88,7 +88,7 @@ public class InputPanel extends Panel {
 
         tableModel = new CustomTableModel(10, 4);
         table = new CustomTable(tableModel);
-        scrollPane = table.createTablePane(51, 380, 993, 355);
+        scrollPane = table.createTablePane(51, 360, 993, 355);
 
         totalPageFault = new Label("Total Page Fault: ");
         totalPageFault.setBounds(412, 700, 225, 25);
@@ -242,6 +242,7 @@ public class InputPanel extends Panel {
 
     public void listenToInputFunctions() {
         randomizeButton.addActionListener( e -> {
+            tableModel.resetTable();
             pageReferenceField.setText(pageRefString.random()); // sets string to random
             frameNumField.setText(Integer.toString(new Random().nextInt(6) + 4));
         });
@@ -268,6 +269,7 @@ public class InputPanel extends Panel {
         runButton.addActionListener( e -> {
             // create a new instance of PageReplacementSimulator class
             simulate();
+            populateResults();
         });
 
         saveButton.addActionListener( e -> {
@@ -300,18 +302,24 @@ public class InputPanel extends Panel {
                 break;
         }
         simulator.simulate();
-        populateResults();
     }
 
     private void populateResults() {
         tableModel.resetTable();
         ArrayList<Step> steps = simulator.getSteps();
-        for(int i = 0; i < steps.size(); i++) {
+        int count = 0;
+        for (int i = steps.size() - 1; i >= 0; i--) {
             Step step = steps.get(i);
-            for(int j = 0; j < step.getPagesProcessed().size(); j++) {
-                table.setValueAt(step.getPagesProcessed().get(j), j, i);
+            table.setValueAt(pageRefString.getPages().get(count), 0, count);
+            count++;
+            for (int j = 0; j < step.getPagesProcessed().size(); j++) {
+                int row = table.getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
+                table.setValueAt(step.getPagesProcessed().get(j), row, i);
+                table.setValueAt(step.getStatus(), table.getRowCount() - 1, i);
             }
         }
+
+
 
     }
 

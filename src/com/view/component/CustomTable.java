@@ -10,7 +10,7 @@ import java.awt.*;
 
 public class CustomTable extends JTable {
     private final Color TABLE_PANE_COLOR = new Color(247, 245, 245);
-    private final Font TABLE_FONT = new Font("Montserrat", Font.PLAIN, 18);
+    private final Font TABLE_FONT = new Font("Montserrat", Font.PLAIN, 14);
 
     private Border cellBorder;
 
@@ -28,7 +28,6 @@ public class CustomTable extends JTable {
         setShowGrid(false);
         setIntercellSpacing(new Dimension(0, 0));
 
-        // Initialize the cell border
 
 
         // Add a table model listener to update the cell renderer
@@ -55,10 +54,17 @@ public class CustomTable extends JTable {
             marginSize = 3;
         } else if (getColumnCount() >= 30) {
             marginSize = 2;
+            setFont(new Font("Montserrat", Font.PLAIN, 10));
         }
-        Border outerBorder = BorderFactory.createMatteBorder(1, marginSize, 1, marginSize, new Color(247, 245, 245)); // Change outer border color here
-        Border innerBorder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK); // Change inner border color here
-        ((JComponent) component).setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
+
+        // Set different borders for header row and last column
+        if (row == 0 || row == getRowCount() - 1) {
+            ((JComponent) component).setBorder(BorderFactory.createEmptyBorder());
+        } else {
+            Border outerBorder = BorderFactory.createMatteBorder(1, marginSize, 1, marginSize, new Color(247, 245, 245)); // Change outer border color here
+            Border innerBorder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK); // Change inner border color here
+            ((JComponent) component).setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
+        }
 
         return component;
     }
