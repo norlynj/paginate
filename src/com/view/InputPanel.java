@@ -1,7 +1,6 @@
 package view;
 
-import model.PageReferenceString;
-import model.FileReader;
+import model.*;
 import view.component.Frame;
 import view.component.ImageButton;
 import view.component.Label;
@@ -34,6 +33,7 @@ public class InputPanel extends Panel {
     private CustomTable table;
     private JScrollPane scrollPane;
     private PageReferenceString pageRefString;
+    PageReplacementSimulator simulator;
     private boolean validInputs = false;
     public InputPanel() {
 
@@ -146,6 +146,7 @@ public class InputPanel extends Panel {
 
         listenToUserInput();
         listenToInputFunctions();
+        listenToOutputFunctions();
     }
 
     private void listenToUserInput() {
@@ -257,8 +258,41 @@ public class InputPanel extends Panel {
 
     }
 
-    private void setTable() {
+    private void listenToOutputFunctions() {
+        runButton.addActionListener( e -> {
+            // create a new instance of PageReplacementSimulator class
+            simulate();
+        });
 
+        saveButton.addActionListener( e -> {
+            // allow pdf as output file here
+        });
+
+    }
+
+    private void simulate() {
+        simulator = new FIFO(pageRefString);
+        String selected = (String) algorithmChoice.getSelectedItem();
+        switch (selected) {
+            case "FIFO":
+                simulator = new FIFO(pageRefString);
+                break;
+            case "LRU":
+                simulator = new LRU(pageRefString);
+                break;
+            case "Second Chance (SC)":
+                simulator = new SecondChance(pageRefString);
+                break;
+            case "Enhanced SC":
+                simulator = new EnhancedSecondChance(pageRefString);
+                break;
+            case "LFU":
+                simulator = new LFU(pageRefString);
+                break;
+            case "MFU":
+                simulator = new MFU(pageRefString);
+                break;
+        }
     }
 
     private void enableOutputButtons() {
