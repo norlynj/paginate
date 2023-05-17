@@ -31,8 +31,8 @@ public class InputPanel extends Panel {
     private JComboBox algorithmChoice;
     private ImageButton frameNumPlus, frameNumMinus;
     private JTextField pageReferenceField, frameNumField;
-    private ImageButton importButton, randomizeButton, runButton, saveButton;
-    private JLabel totalPageFault;
+    private ImageButton importButton, randomizeButton, runButton, pauseButton, saveButton;
+    private JLabel timerLabel, totalPageFault;
     private CustomTableModel tableModel;
     private CustomTable table;
     private JScrollPane scrollPane;
@@ -55,7 +55,7 @@ public class InputPanel extends Panel {
         homeButton.setBounds(1010, 25, 47, 47);
         musicOffButton.setVisible(false);
 
-        algorithmChoice = new JComboBox(new String[]{"FIFO", "LRU", "OPT", "Second Chance(SC)", "Enhanced SC", "LFU", "MFU"});
+        algorithmChoice = new JComboBox(new String[]{"Simulate all", "FIFO", "LRU", "OPT", "Second Chance(SC)", "Enhanced SC", "LFU", "MFU"});
         algorithmChoice.setRenderer(new CustomComboBoxRenderer());
         algorithmChoice.setBackground(new Color(77,58,104));
         algorithmChoice.setForeground(Color.white);
@@ -86,16 +86,23 @@ public class InputPanel extends Panel {
         importButton = new ImageButton("buttons/from-text.png");
         randomizeButton = new ImageButton("buttons/randomize.png");
         runButton = new ImageButton("buttons/run.png");
+        pauseButton = new ImageButton("buttons/randomize.png");
         saveButton = new ImageButton("buttons/save.png");
 
         importButton.setBounds(597, 202, 58, 58);
         randomizeButton.setBounds(673, 202, 58, 58);
         runButton.setBounds(785, 202, 58, 58);
+        pauseButton.setBounds(785, 202, 58, 58);
+        pauseButton.setVisible(false);
         saveButton.setBounds(882, 202, 58, 58);
 
         tableModel = new CustomTableModel(10, 4);
         table = new CustomTable(tableModel);
         scrollPane = table.createTablePane(51, 330, 993, 355);
+
+        timerLabel = new Label("TIMER: 00:00 ");
+        timerLabel.setBounds(47, 288, 145, 29);
+        timerLabel.setFont(new Font("Montserrat", Font.BOLD, 18));
 
         totalPageFault = new Label("Total Page Fault: ");
         totalPageFault.setBounds(412, 700, 225, 25);
@@ -107,7 +114,6 @@ public class InputPanel extends Panel {
         pageRefString = new PageReferenceString();
 
         // slider and timer
-
         slider = new JSlider();
         slider.setMajorTickSpacing(25);
         slider.setMinorTickSpacing(10);
@@ -121,14 +127,17 @@ public class InputPanel extends Panel {
         position.put(100, new JLabel("4"));
         slider.setLabelTable(position);
         slider.setBackground(new Color(247, 245, 245));
-        slider.setBounds(187, 270, 246, 45);
+        slider.setBounds(190, 288, 246, 45);
 
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                sliderValue = ((JSlider)e.getSource()).getValue() * 100;
+                double val = (double)((JSlider)e.getSource()).getValue();
+                sliderValue = (int)((val / 100) * 4000); //map positions accordingly to 0, 1000, 2000, 3000
                 System.out.println("Value of the slider is: " + sliderValue);
             }
         });
+
+        /// For simulating all algorithms
 
         //Add components to frame
         this.add(slider);
@@ -143,7 +152,9 @@ public class InputPanel extends Panel {
         this.add(importButton);
         this.add(randomizeButton);
         this.add(runButton);
+        this.add(pauseButton);
         this.add(saveButton);
+        this.add(timerLabel);
         this.add(totalPageFault);
         this.add(scrollPane);
 
@@ -173,6 +184,16 @@ public class InputPanel extends Panel {
                 frameNumField.setText(String.valueOf(Integer.parseInt(frameNumField.getText()) - 1));
             } catch (NumberFormatException ex) {
                 frameNumField.setText("4");
+            }
+        });
+
+        pauseButton.addActionListener( e -> {
+            if (timer != null) {
+                System.out.println("true");
+                timer.stop();
+                slider.setEnabled(true);
+                pauseButton.setVisible(false);
+                runButton.setVisible(true);
             }
         });
 
@@ -303,6 +324,9 @@ public class InputPanel extends Panel {
             // create a new instance of PageReplacementSimulator class
             simulate();
             populateResults();
+
+            pauseButton.setVisible(true);
+            runButton.setVisible(false);
         });
 
         saveButton.addActionListener( e -> {
@@ -352,13 +376,22 @@ public class InputPanel extends Panel {
         // Create a new timer with an interval of 1000 milliseconds (1 second)
         timer = new Timer(sliderValue, new ActionListener() {
             private int stepIndex = 0; // Start from the first step (0th index)
+            long startTime = System.currentTimeMillis();
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Check if there are more steps to process
                 if (stepIndex < steps.size()) {
+                    // disable sliders and run function
+                    slider.setEnabled(false);
+
                     Step step = steps.get(stepIndex);
                     table.setValueAt(pageRefString.getPages().get(stepIndex), 0, stepIndex);
+
+                    long elapsedTime = System.currentTimeMillis() - startTime;
+                    long seconds = (elapsedTime / 1000) % 60;
+                    String time = String.format("%02d:%02d", seconds / 60, seconds % 60);
+                    timerLabel.setText("TIMER: " + time);
 
                     // Iterate over the pages processed in the current step
                     for (int j = 0; j < step.getPagesProcessed().size(); j++) {
@@ -370,6 +403,11 @@ public class InputPanel extends Panel {
                     totalPageFault.setText("Page Fault: " + String.valueOf(step.getPageFaults()));
                     stepIndex++; // Move to the next step
                 } else {
+                    // enable sliders and run function
+                    slider.setEnabled(true);
+                    pauseButton.setVisible(false);
+                    runButton.setVisible(true);
+
                     // All steps have been processed, stop the timer
                     totalPageFault.setText("Page Fault: " + String.valueOf(simulator.getPageFaults()));
                     timer.stop();
