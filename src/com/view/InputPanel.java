@@ -118,7 +118,7 @@ public class InputPanel extends Panel {
         timerLabel.setBounds(47, 288, 145, 29);
         timerLabel.setFont(new Font("Montserrat", Font.BOLD, 18));
 
-        totalPageFault = new Label("Total Page Fault: ");
+        totalPageFault = new Label();
         totalPageFault.setBounds(412, 725, 225, 25);
         totalPageFault.setFont(new Font("Montserrat", Font.BOLD, 24));
 
@@ -452,12 +452,8 @@ public class InputPanel extends Panel {
     public void populateResultTables() {
         totalPageFault.setText("");
 
-
-
         // Reset the table model and get the steps
         for (int i = 0; i < tableModels.length; i++) {
-            tableModels[i].resetTable();
-            totalPageFaults[i].setText(tableTitles[i] + " | Page Faults: ");
         }
 
         // Stop any running timer before starting a new one
@@ -478,6 +474,7 @@ public class InputPanel extends Panel {
                     slider.setEnabled(false);
 
                     for (int i = 0; i < tableModels.length; i++) {
+                        tableModels[i].resetTable();
                         Step step = simulators[0].getSteps().get(stepIndex);
                         for (int j = 0; j < step.getPagesProcessed().size(); j++) {
                             int row = tables[i].getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
@@ -485,6 +482,7 @@ public class InputPanel extends Panel {
                             tables[i].setValueAt(step.getStatus(), table.getRowCount() - 1, stepIndex);
                             tables[i].getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
                         }
+                        System.out.println(step.getPageFaults());
                         totalPageFaults[i].setText(tableTitles[i] + " | Page Faults: " + step.getPageFaults());
                     }
 
@@ -501,7 +499,6 @@ public class InputPanel extends Panel {
                     runButton.setVisible(true);
 
                     // All steps have been processed, stop the timer
-                    totalPageFault.setText("Page Fault: " + String.valueOf(simulator.getPageFaults()));
                     timer.stop();
                 }
             }
