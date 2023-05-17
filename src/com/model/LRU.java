@@ -51,7 +51,7 @@ public class LRU extends PageReplacementSimulator{
                 }
                 indexes.put(pages.get(i), i);
             }
-            steps.add(new Step(i, currentFrame, status, new ArrayList<>(s)));
+            steps.add(new Step(i, currentFrame, status, new ArrayList<>(s), pf));
         }
         this.pageFaults = pf;
     }

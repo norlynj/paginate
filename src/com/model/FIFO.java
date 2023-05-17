@@ -58,7 +58,7 @@ public class FIFO extends PageReplacementSimulator {
                     status = "hit";
                 }
             }
-            steps.add(new Step(i, currentFrame, status, new ArrayList<>(s)));
+            steps.add(new Step(i, currentFrame, status, new ArrayList<>(s), pf));
         }
         this.pageFaults = pf;
     }

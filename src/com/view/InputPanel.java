@@ -16,6 +16,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -40,6 +42,7 @@ public class InputPanel extends Panel {
     private boolean validStringInputs = false, validFrameNum = false;
     private JSlider slider;
     private int sliderValue = 2000;
+    private Timer timer;
     public InputPanel() {
 
         super("bg/input-panel.png");
@@ -336,24 +339,48 @@ public class InputPanel extends Panel {
     }
 
     private void populateResults() {
+        // Reset the table model and get the steps
         tableModel.resetTable();
+        totalPageFault.setText("");
         ArrayList<Step> steps = simulator.getSteps();
         int count = 0;
-        for (int i = steps.size() - 1; i >= 0; i--) {
-            Step step = steps.get(i);
-            table.setValueAt(pageRefString.getPages().get(count), 0, count);
-            count++;
-            for (int j = 0; j < step.getPagesProcessed().size(); j++) {
-                int row = table.getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
-                table.setValueAt(step.getPagesProcessed().get(j), row, i);
-                table.setValueAt(step.getStatus(), table.getRowCount() - 1, i);
-            }
+
+        // Stop any running timer before starting a new one
+        if (timer != null && timer.isRunning()) {
+            timer.stop();
         }
-        totalPageFault.setText("Page Fault: " + String.valueOf(simulator.getPageFaults()));
 
+        // Create a new timer with an interval of 1000 milliseconds (1 second)
+        timer = new Timer(sliderValue, new ActionListener() {
+            private int stepIndex = 0; // Start from the first step (0th index)
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Check if there are more steps to process
+                if (stepIndex < steps.size()) {
+                    Step step = steps.get(stepIndex);
+                    table.setValueAt(pageRefString.getPages().get(stepIndex), 0, stepIndex);
 
+                    // Iterate over the pages processed in the current step
+                    for (int j = 0; j < step.getPagesProcessed().size(); j++) {
+                        int row = table.getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
+                        table.setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
+                        table.setValueAt(step.getStatus(), table.getRowCount() - 1, stepIndex);
+                    }
+                    totalPageFault.setText("Page Fault: " + String.valueOf(step.getPageFaults()));
+                    stepIndex++; // Move to the next step
+                } else {
+                    // All steps have been processed, stop the timer
+                    totalPageFault.setText("Page Fault: " + String.valueOf(simulator.getPageFaults()));
+                    timer.stop();
+                }
+            }
+        });
+
+        // Start the timer
+        timer.start();
     }
+
 
     private void enableOutputButtons() {
         runButton.setEnabled(true);
