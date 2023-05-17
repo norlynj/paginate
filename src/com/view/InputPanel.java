@@ -1,7 +1,6 @@
 package view;
 
-import model.PageReferenceString;
-import model.FileReader;
+import model.*;
 import view.component.Frame;
 import view.component.ImageButton;
 import view.component.Label;
@@ -34,6 +33,8 @@ public class InputPanel extends Panel {
     private CustomTable table;
     private JScrollPane scrollPane;
     private PageReferenceString pageRefString;
+    PageReplacementSimulator simulator;
+    private boolean validStringInputs = false, validFrameNum = false;
     public InputPanel() {
 
         super("bg/input-panel.png");
@@ -52,7 +53,7 @@ public class InputPanel extends Panel {
         algorithmChoice.setBackground(new Color(77,58,104));
         algorithmChoice.setForeground(Color.white);
         algorithmChoice.setFont(new Font("Montserrat", Font.BOLD, 18));
-        algorithmChoice.setBounds(155, 264, 145, 44);
+        algorithmChoice.setBounds(150, 264, 150, 44);
 
         pageReferenceField = new JTextField("", 2);
         pageReferenceField.setName("pageReferenceField");
@@ -85,15 +86,10 @@ public class InputPanel extends Panel {
         runButton.setBounds(785, 257, 58, 58);
         saveButton.setBounds(882, 258, 58, 58);
 
-//        disableOutputButtons();
-
-        // table
-
         tableModel = new CustomTableModel(10, 4);
         table = new CustomTable(tableModel);
-        scrollPane = table.createTablePane(51, 380, 993, 355);
+        scrollPane = table.createTablePane(51, 360, 993, 355);
 
-        // result total page fault
         totalPageFault = new Label("Total Page Fault: ");
         totalPageFault.setBounds(412, 700, 225, 25);
         totalPageFault.setFont(new Font("Montserrat", Font.BOLD, 24));
@@ -121,24 +117,6 @@ public class InputPanel extends Panel {
 
     }
 
-
-    // UI
-    private static class CustomComboBoxRenderer extends BasicComboBoxRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            setHorizontalAlignment(SwingConstants.CENTER);
-            if (isSelected) {
-                setBackground(new Color(232, 160, 221)); // set selected item background color
-                setForeground(new Color(77,58,104)); // set item text color
-            } else {
-                setBackground(new Color(77,58,104)); // set unselected item background color
-                setForeground(Color.WHITE); // set item text color
-            }
-            setFont(new Font("Montserrat", Font.BOLD, 14));
-            return this;
-        }
-    }
 
     private void setListeners() {
         musicOnButton.hover("buttons/volume-off-hover.png", "buttons/volume-on.png");
@@ -168,23 +146,7 @@ public class InputPanel extends Panel {
 
         listenToUserInput();
         listenToInputFunctions();
-    }
-
-    public static void main(String[] args) {
-        InputPanel m = new InputPanel();
-        Frame frame = new Frame("Input Panel");
-        frame.add(m);
-        frame.setVisible(true);
-    }
-
-    public void musicClick() {
-        if (musicOffButton.isVisible()){
-            musicOnButton.setVisible(true);
-            musicOffButton.setVisible(false);
-        } else {
-            musicOnButton.setVisible(false);
-            musicOffButton.setVisible(true);
-        }
+        listenToOutputFunctions();
     }
 
     private void listenToUserInput() {
@@ -212,18 +174,22 @@ public class InputPanel extends Panel {
             private void validateInput() {
                 try {
                     String str = input.getText();
-                    boolean frameSizeValid = false, stringValid = false ;
+                    boolean valid = false ;
                     if (input.getName().equals("frameNumField")) {
                         int value = Integer.parseInt(str);
-                        if (value <= FRAME_SIZE_MIN || value >= FRAME_SIZE_MAX) {
+                        if (value < FRAME_SIZE_MIN || value > FRAME_SIZE_MAX) {
                             // If the value is out of range, highlight the text field
                             input.setBackground(new Color(255, 202, 202));
                             disableOutputButtons();
+                            validFrameNum = false;
 
                         } else {
                             input.setBackground(UIManager.getColor("TextField.background"));
-                            frameSizeValid = true;
                             tableModel.setNumRows(value);
+                            if (validStringInputs) {
+                                enableOutputButtons();
+                            }
+                            validFrameNum = true;
 
                         }
                     } else if(input.getName().equals("pageReferenceField")) {
@@ -236,31 +202,35 @@ public class InputPanel extends Panel {
                                     parts[parts.length-1].matches("\\d+")) {
                                 // Split the input into an array of integers
                                 String[] nums = str.split(",\\s");
+                                ArrayList<Integer> numList = new ArrayList<>();
                                 for (String num : nums) {
                                     int value = Integer.parseInt(num);
+                                    numList.add(value);
                                     // Check that each integer value in the input is between 0 and 20
-                                    if (value <= STRING_VAL_MIN || value >= STRING_VAL_MAX) {
+                                    if (value < STRING_VAL_MIN || value > STRING_VAL_MAX) {
                                         input.setBackground(new Color(255, 202, 202));
                                         disableOutputButtons();
+                                        validStringInputs = false;
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
-                                        stringValid = true;
-                                        pageRefString.setString(new ArrayList<>(Arrays.asList(nums)));
+                                        pageRefString.setString(numList);
                                         tableModel.setColumnCount(parts.length);
+                                        if (validFrameNum) {
+                                            enableOutputButtons();
+                                        }
+                                        validStringInputs = true;
                                     }
                                 }
                             } else {
                                 input.setBackground(new Color(255, 202, 202));
                                 disableOutputButtons();
+                                validStringInputs = false;
                             }
                         } else {
                             input.setBackground(new Color(255, 202, 202));
                             disableOutputButtons();
+                            validStringInputs = false;
                         }
-                    }
-
-                    if (frameSizeValid || stringValid) {
-                        enableOutputButtons();
                     }
                 } catch (NumberFormatException ex) {
                     // If the input cannot be parsed as an integer, highlight the text field
@@ -272,6 +242,7 @@ public class InputPanel extends Panel {
 
     public void listenToInputFunctions() {
         randomizeButton.addActionListener( e -> {
+            tableModel.resetTable();
             pageReferenceField.setText(pageRefString.random()); // sets string to random
             frameNumField.setText(Integer.toString(new Random().nextInt(6) + 4));
         });
@@ -294,7 +265,62 @@ public class InputPanel extends Panel {
 
     }
 
-    private void setTable() {
+    private void listenToOutputFunctions() {
+        runButton.addActionListener( e -> {
+            // create a new instance of PageReplacementSimulator class
+            simulate();
+            populateResults();
+        });
+
+        saveButton.addActionListener( e -> {
+            // allow pdf as output file here
+        });
+
+    }
+
+    private void simulate() {
+        String selected = (String) algorithmChoice.getSelectedItem();
+        int frameNum = Integer.parseInt(frameNumField.getText());
+        switch (selected) {
+            case "FIFO":
+                simulator = new FIFO(pageRefString, frameNum);
+                break;
+            case "LRU":
+                simulator = new LRU(pageRefString, frameNum);
+                break;
+            case "Second Chance (SC)":
+                simulator = new SecondChance(pageRefString);
+                break;
+            case "Enhanced SC":
+                simulator = new EnhancedSecondChance(pageRefString);
+                break;
+            case "LFU":
+                simulator = new LFU(pageRefString);
+                break;
+            case "MFU":
+                simulator = new MFU(pageRefString);
+                break;
+        }
+        simulator.simulate();
+    }
+
+    private void populateResults() {
+        tableModel.resetTable();
+        ArrayList<Step> steps = simulator.getSteps();
+        int count = 0;
+        for (int i = steps.size() - 1; i >= 0; i--) {
+            Step step = steps.get(i);
+            table.setValueAt(pageRefString.getPages().get(count), 0, count);
+            count++;
+            for (int j = 0; j < step.getPagesProcessed().size(); j++) {
+                int row = table.getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
+                table.setValueAt(step.getPagesProcessed().get(j), row, i);
+                table.setValueAt(step.getStatus(), table.getRowCount() - 1, i);
+            }
+        }
+        totalPageFault.setText("Page Fault: " + String.valueOf(simulator.getPageFaults()));
+
+
 
     }
 
@@ -317,6 +343,41 @@ public class InputPanel extends Panel {
     }
     public ImageButton getHomeButton() {
         return homeButton;
+    }
+
+    public static void main(String[] args) {
+        InputPanel m = new InputPanel();
+        Frame frame = new Frame("Input Panel");
+        frame.add(m);
+        frame.setVisible(true);
+    }
+
+    public void musicClick() {
+        if (musicOffButton.isVisible()){
+            musicOnButton.setVisible(true);
+            musicOffButton.setVisible(false);
+        } else {
+            musicOnButton.setVisible(false);
+            musicOffButton.setVisible(true);
+        }
+    }
+
+    // UI
+    private static class CustomComboBoxRenderer extends BasicComboBoxRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            setHorizontalAlignment(SwingConstants.CENTER);
+            if (isSelected) {
+                setBackground(new Color(232, 160, 221)); // set selected item background color
+                setForeground(new Color(77,58,104)); // set item text color
+            } else {
+                setBackground(new Color(77,58,104)); // set unselected item background color
+                setForeground(Color.WHITE); // set item text color
+            }
+            setFont(new Font("Montserrat", Font.BOLD, 14));
+            return this;
+        }
     }
 }
 
