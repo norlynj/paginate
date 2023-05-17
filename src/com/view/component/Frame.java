@@ -7,7 +7,7 @@ import java.util.Objects;
 public class  Frame extends JFrame {
     JWindow window = new JWindow();
     public Frame(String name) {
-//        loadImage("bg/splashscreen.gif");
+        loadImage("bg/splashscreen.gif");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle(name);
@@ -28,7 +28,7 @@ public class  Frame extends JFrame {
 
         window.setVisible(true);
         try {
-            Thread.sleep(3000); //show the splash screen for 10 seconds
+            Thread.sleep(4000); //show the splash screen for 4 seconds
         } catch (InterruptedException e) {
             e.getMessage();
         }
