@@ -93,6 +93,13 @@ public class CustomTable extends JTable {
         return scrollPane;
     }
 
+    public JScrollPane createTablePane() {
+        JScrollPane scrollPane = new JScrollPane(this);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(TABLE_PANE_COLOR);
+        return scrollPane;
+    }
+
     private void updateCellRenderer(int row, int col) {
         try {
             setIntercellSpacing(new Dimension(0, 0));

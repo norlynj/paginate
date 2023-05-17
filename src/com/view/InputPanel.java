@@ -8,24 +8,25 @@ import view.component.HighlightCellRenderer;
 import view.component.Panel;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Random;
 
 public class InputPanel extends Panel {
+    Color bgColor = new Color(247, 245, 245);
     private int STRING_LEN_MIN = 10, STRING_LEN_MAX = 40, STRING_VAL_MIN = 0, STRING_VAL_MAX = 20, FRAME_SIZE_MIN = 3, FRAME_SIZE_MAX = 10;
     private ImageButton musicOnButton, musicOffButton, homeButton;
     private JComboBox algorithmChoice;
@@ -33,9 +34,20 @@ public class InputPanel extends Panel {
     private JTextField pageReferenceField, frameNumField;
     private ImageButton importButton, randomizeButton, runButton, pauseButton, saveButton;
     private JLabel timerLabel, totalPageFault;
+
+    // for one algo simulation
     private CustomTableModel tableModel;
     private CustomTable table;
-    private JScrollPane scrollPane;
+    private JScrollPane tableScrollPane;
+
+    // for all algo simulation
+    private JPanel tablesPanel;
+    private CustomTableModel[] tableModels;
+    private CustomTable tables[];
+    private JScrollPane tablesScrollPane;
+    private JLabel totalPageFaults[];
+
+    private JScrollPane[] scrollPanes;
     private PageReferenceString pageRefString;
     PageReplacementSimulator simulator;
     private boolean validStringInputs = false, validFrameNum = false;
@@ -86,7 +98,7 @@ public class InputPanel extends Panel {
         importButton = new ImageButton("buttons/from-text.png");
         randomizeButton = new ImageButton("buttons/randomize.png");
         runButton = new ImageButton("buttons/run.png");
-        pauseButton = new ImageButton("buttons/randomize.png");
+        pauseButton = new ImageButton("buttons/pause.png");
         saveButton = new ImageButton("buttons/save.png");
 
         importButton.setBounds(597, 202, 58, 58);
@@ -96,16 +108,17 @@ public class InputPanel extends Panel {
         pauseButton.setVisible(false);
         saveButton.setBounds(882, 202, 58, 58);
 
-        tableModel = new CustomTableModel(10, 4);
-        table = new CustomTable(tableModel);
-        scrollPane = table.createTablePane(51, 330, 993, 355);
+        showAllTables();
+        showOneTable();
+        tableScrollPane.setVisible(false);
+
 
         timerLabel = new Label("TIMER: 00:00 ");
         timerLabel.setBounds(47, 288, 145, 29);
         timerLabel.setFont(new Font("Montserrat", Font.BOLD, 18));
 
         totalPageFault = new Label("Total Page Fault: ");
-        totalPageFault.setBounds(412, 700, 225, 25);
+        totalPageFault.setBounds(412, 725, 225, 25);
         totalPageFault.setFont(new Font("Montserrat", Font.BOLD, 24));
 
         disableOutputButtons();
@@ -126,7 +139,7 @@ public class InputPanel extends Panel {
         position.put(75, new JLabel("3"));
         position.put(100, new JLabel("4"));
         slider.setLabelTable(position);
-        slider.setBackground(new Color(247, 245, 245));
+        slider.setBackground(bgColor);
         slider.setBounds(190, 288, 246, 45);
 
         slider.addChangeListener(new ChangeListener() {
@@ -136,8 +149,6 @@ public class InputPanel extends Panel {
                 System.out.println("Value of the slider is: " + sliderValue);
             }
         });
-
-        /// For simulating all algorithms
 
         //Add components to frame
         this.add(slider);
@@ -156,7 +167,8 @@ public class InputPanel extends Panel {
         this.add(saveButton);
         this.add(timerLabel);
         this.add(totalPageFault);
-        this.add(scrollPane);
+        this.add(tableScrollPane);
+        this.add(tablesScrollPane);
 
     }
 
@@ -172,6 +184,25 @@ public class InputPanel extends Panel {
         runButton.hover("buttons/run-hover.png", "buttons/run.png");
         saveButton.hover("buttons/save-hover.png", "buttons/save.png");
 
+        listenToUserInput();
+        listenToInputFunctions();
+        listenToOutputFunctions();
+
+        tablesScrollPane.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                // Get the scroll direction
+                int scrollAmount = e.getUnitsToScroll();
+
+                // Adjust the vertical scroll position
+                JScrollBar verticalScrollBar = tablesScrollPane.getVerticalScrollBar();
+                int newPosition = verticalScrollBar.getValue() + verticalScrollBar.getBlockIncrement() * scrollAmount;
+                verticalScrollBar.setValue(newPosition);
+            }
+        });
+    }
+
+    private void listenToUserInput() {
         frameNumPlus.addActionListener(e -> {
             try {
                 frameNumField.setText(String.valueOf(Integer.parseInt(frameNumField.getText()) + 1));
@@ -187,101 +218,10 @@ public class InputPanel extends Panel {
             }
         });
 
-        listenToUserInput();
-        listenToInputFunctions();
-        listenToOutputFunctions();
-    }
-
-    private void listenToUserInput() {
         inputValidator(pageReferenceField);
         inputValidator(frameNumField);
     }
 
-    private void inputValidator(JTextField input) {
-        input.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                validateInput();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                validateInput();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                validateInput();
-            }
-
-            private void validateInput() {
-                try {
-                    String str = input.getText();
-                    boolean valid = false ;
-                    if (input.getName().equals("frameNumField")) {
-                        int value = Integer.parseInt(str);
-                        if (value < FRAME_SIZE_MIN || value > FRAME_SIZE_MAX) {
-                            // If the value is out of range, highlight the text field
-                            input.setBackground(new Color(255, 202, 202));
-                            disableOutputButtons();
-                            validFrameNum = false;
-
-                        } else {
-                            input.setBackground(UIManager.getColor("TextField.background"));
-                            tableModel.setNumRows(value);
-                            if (validStringInputs) {
-                                enableOutputButtons();
-                            }
-                            validFrameNum = true;
-
-                        }
-                    } else if(input.getName().equals("pageReferenceField")) {
-                        // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 10-40, string value must be between 0-20
-                        if (str.matches("\\d+(,\\s\\d+)*")) {
-                            String[] parts = str.split(",\\s");
-                            if (parts.length >= STRING_LEN_MIN &&
-                                    parts.length <= STRING_LEN_MAX &&
-                                    parts[0].matches("\\d+") &&
-                                    parts[parts.length-1].matches("\\d+")) {
-                                // Split the input into an array of integers
-                                String[] nums = str.split(",\\s");
-                                ArrayList<Integer> numList = new ArrayList<>();
-                                for (String num : nums) {
-                                    int value = Integer.parseInt(num);
-                                    numList.add(value);
-                                    // Check that each integer value in the input is between 0 and 20
-                                    if (value < STRING_VAL_MIN || value > STRING_VAL_MAX) {
-                                        input.setBackground(new Color(255, 202, 202));
-                                        disableOutputButtons();
-                                        validStringInputs = false;
-                                    } else {
-                                        input.setBackground(UIManager.getColor("TextField.background"));
-                                        pageRefString.setString(numList);
-                                        tableModel.setColumnCount(parts.length);
-                                        if (validFrameNum) {
-                                            enableOutputButtons();
-                                        }
-                                        validStringInputs = true;
-                                    }
-                                }
-                            } else {
-                                input.setBackground(new Color(255, 202, 202));
-                                disableOutputButtons();
-                                validStringInputs = false;
-                            }
-                        } else {
-                            input.setBackground(new Color(255, 202, 202));
-                            disableOutputButtons();
-                            validStringInputs = false;
-                        }
-                    }
-                } catch (NumberFormatException ex) {
-                    // If the input cannot be parsed as an integer, highlight the text field
-                    input.setBackground(new Color(255, 202, 202));
-                }
-            }
-        });
-    }
 
     public void listenToInputFunctions() {
 
@@ -307,6 +247,72 @@ public class InputPanel extends Panel {
 
         });
 
+        algorithmChoice.addActionListener(e -> {
+            switch((String) algorithmChoice.getSelectedItem()) {
+                case "Simulate all":
+                    tablesScrollPane.setVisible(true);
+                    tableScrollPane.setVisible(false);
+                    break;
+                default:
+                    tablesScrollPane.setVisible(false);
+                    tableScrollPane.setVisible(true);
+                    break;
+
+            }
+            System.out.println((String) algorithmChoice.getSelectedItem());
+
+        });
+
+    }
+
+    private void showAllTables() {
+        tablesPanel = new JPanel();
+        tablesPanel.setBackground(bgColor);
+        tablesPanel.setLayout(new BoxLayout(tablesPanel, BoxLayout.Y_AXIS));
+
+        // Table titles
+        String[] tableTitles = {"FIFO", "LRU", "OPT", "Second Chance", "Enhanced Second Chance", "LFU", "MFU"};
+
+        // Create arrays to store table models and tables
+        tableModels = new CustomTableModel[tableTitles.length];
+        tables = new CustomTable[tableTitles.length];
+        scrollPanes = new JScrollPane[tableTitles.length];
+        totalPageFaults = new JLabel[tableTitles.length];
+
+        // Create multiple tables
+        for (int i = 0; i < tableTitles.length; i++) {
+            String title = tableTitles[i];
+
+            // Create a label for the table title
+            JLabel titleLabel = new JLabel(title + " | Page Faults: ");
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            tablesPanel.add(titleLabel);
+
+            tableModels[i] = new CustomTableModel();
+            tables[i] = new CustomTable(tableModels[i]);
+            scrollPanes[i] = tables[i].createTablePane();
+            tablesPanel.add(scrollPanes[i]);
+
+            // Add some vertical space between tables
+            tablesPanel.add(Box.createVerticalStrut(10));
+
+            // Set the preferred size of the scroll pane to allow table height adjustment
+            scrollPanes[i].setPreferredSize(new Dimension(scrollPanes[i].getPreferredSize().width, tables[i].getRowCount()*30));
+        }
+
+        // Create a scroll pane for the tables panel
+        tablesScrollPane = new JScrollPane(tablesPanel);
+        tablesScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        tablesScrollPane.getViewport().setBackground(bgColor);
+        tablesScrollPane.setBounds(53, 336, 993, 385);
+    }
+
+
+    private void showOneTable(){
+        tableModel = new CustomTableModel();
+        table = new CustomTable(tableModel);
+        tableScrollPane = table.createTablePane(51, 330, 993, 355);
     }
 
     private void listenToOutputFunctions() {
@@ -457,7 +463,99 @@ public class InputPanel extends Panel {
             musicOffButton.setVisible(true);
         }
     }
+    private void inputValidator(JTextField input) {
+        input.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                validateInput();
+            }
 
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                validateInput();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                validateInput();
+            }
+
+            private void validateInput() {
+                try {
+                    String str = input.getText();
+                    boolean valid = false ;
+                    if (input.getName().equals("frameNumField")) {
+                        int value = Integer.parseInt(str);
+                        if (value < FRAME_SIZE_MIN || value > FRAME_SIZE_MAX) {
+                            // If the value is out of range, highlight the text field
+                            input.setBackground(new Color(255, 202, 202));
+                            disableOutputButtons();
+                            validFrameNum = false;
+
+                        } else {
+                            input.setBackground(UIManager.getColor("TextField.background"));
+                            tableModel.setNumRows(value);
+                            for (int i = 0; i < tableModels.length; i++) {
+                                tableModels[i].setNumRows(value); // for the table that shows all algo
+                            }
+
+                            if (validStringInputs) {
+                                enableOutputButtons();
+                            }
+                            validFrameNum = true;
+
+                        }
+                    } else if(input.getName().equals("pageReferenceField")) {
+                        // check 3 things here: input is a comma-separated list of integers with a space after each comma,  length must be bet 10-40, string value must be between 0-20
+                        if (str.matches("\\d+(,\\s\\d+)*")) {
+                            String[] parts = str.split(",\\s");
+                            if (parts.length >= STRING_LEN_MIN &&
+                                    parts.length <= STRING_LEN_MAX &&
+                                    parts[0].matches("\\d+") &&
+                                    parts[parts.length-1].matches("\\d+")) {
+                                // Split the input into an array of integers
+                                String[] nums = str.split(",\\s");
+                                ArrayList<Integer> numList = new ArrayList<>();
+                                for (String num : nums) {
+                                    int value = Integer.parseInt(num);
+                                    numList.add(value);
+                                    // Check that each integer value in the input is between 0 and 20
+                                    if (value < STRING_VAL_MIN || value > STRING_VAL_MAX) {
+                                        input.setBackground(new Color(255, 202, 202));
+                                        disableOutputButtons();
+                                        validStringInputs = false;
+                                    } else {
+                                        input.setBackground(UIManager.getColor("TextField.background"));
+                                        pageRefString.setString(numList);
+                                        tableModel.setColumnCount(parts.length);
+                                        for (int i = 0; i < tableModels.length; i++) {
+                                            tableModels[i].setColumnCount(parts.length); // for the table that shows all algo
+                                        }
+
+                                        if (validFrameNum) {
+                                            enableOutputButtons();
+                                        }
+                                        validStringInputs = true;
+                                    }
+                                }
+                            } else {
+                                input.setBackground(new Color(255, 202, 202));
+                                disableOutputButtons();
+                                validStringInputs = false;
+                            }
+                        } else {
+                            input.setBackground(new Color(255, 202, 202));
+                            disableOutputButtons();
+                            validStringInputs = false;
+                        }
+                    }
+                } catch (NumberFormatException ex) {
+                    // If the input cannot be parsed as an integer, highlight the text field
+                    input.setBackground(new Color(255, 202, 202));
+                }
+            }
+        });
+    }
     // UI
     private static class CustomComboBoxRenderer extends BasicComboBoxRenderer {
         @Override
