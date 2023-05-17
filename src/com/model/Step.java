@@ -8,6 +8,7 @@ public class Step {
     private int page;
     private int frame;
     private int pageFaults;
+    private boolean hit;
     private String status;
     private ArrayList<Integer> pagesProcessed;
 
@@ -17,6 +18,10 @@ public class Step {
         this.status = status;
         this.pagesProcessed = pagesProcessed;
         this.pageFaults = pageFaults;
+
+        if (status == "hit") {
+            hit = true;
+        }
     }
 
     public int getPage() {
@@ -37,5 +42,9 @@ public class Step {
 
     public int getPageFaults() {
         return pageFaults;
+    }
+
+    public boolean isHit() {
+        return hit;
     }
 }

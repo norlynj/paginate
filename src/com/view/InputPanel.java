@@ -1,12 +1,11 @@
 package view;
 
 import model.*;
+import view.component.*;
 import view.component.Frame;
-import view.component.ImageButton;
 import view.component.Label;
+import view.component.HighlightCellRenderer;
 import view.component.Panel;
-import view.component.CustomTable;
-import view.component.CustomTableModel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -366,6 +365,7 @@ public class InputPanel extends Panel {
                         int row = table.getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
                         table.setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
                         table.setValueAt(step.getStatus(), table.getRowCount() - 1, stepIndex);
+                        table.getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
                     }
                     totalPageFault.setText("Page Fault: " + String.valueOf(step.getPageFaults()));
                     stepIndex++; // Move to the next step
