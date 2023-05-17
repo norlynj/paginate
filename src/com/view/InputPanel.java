@@ -187,16 +187,6 @@ public class InputPanel extends Panel {
             }
         });
 
-        pauseButton.addActionListener( e -> {
-            if (timer != null) {
-                System.out.println("true");
-                timer.stop();
-                slider.setEnabled(true);
-                pauseButton.setVisible(false);
-                runButton.setVisible(true);
-            }
-        });
-
         listenToUserInput();
         listenToInputFunctions();
         listenToOutputFunctions();
@@ -327,6 +317,16 @@ public class InputPanel extends Panel {
 
             pauseButton.setVisible(true);
             runButton.setVisible(false);
+        });
+
+        pauseButton.addActionListener( e -> {
+            if (timer != null) {
+                System.out.println("true");
+                timer.stop();
+                slider.setEnabled(true);
+                pauseButton.setVisible(false);
+                runButton.setVisible(true);
+            }
         });
 
         saveButton.addActionListener( e -> {
