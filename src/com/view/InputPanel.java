@@ -49,6 +49,7 @@ public class InputPanel extends Panel {
 
     private JScrollPane[] scrollPanes;
     private PageReferenceString pageRefString;
+    PageReplacementSimulator[] simulators;
     PageReplacementSimulator simulator;
     private boolean validStringInputs = false, validFrameNum = false;
     private JSlider slider;
@@ -345,25 +346,39 @@ public class InputPanel extends Panel {
         String selected = (String) algorithmChoice.getSelectedItem();
         int frameNum = Integer.parseInt(frameNumField.getText());
         switch (selected) {
+            case "Simulate all":
+                simulators = new PageReplacementSimulator[7];
+                simulators[0] = new FIFO(pageRefString, frameNum);
+                simulators[1] = new LRU(pageRefString, frameNum);
+                simulators[2] = new Optimal(pageRefString, frameNum);
+                simulators[3] = new SecondChance(pageRefString, frameNum);
+                simulators[4] = new EnhancedSecondChance(pageRefString, frameNum);
+                simulators[5] = new LFU(pageRefString, frameNum);
+                simulators[6] = new MFU(pageRefString, frameNum);
+                break;
             case "FIFO":
                 simulator = new FIFO(pageRefString, frameNum);
                 break;
             case "LRU":
                 simulator = new LRU(pageRefString, frameNum);
                 break;
+            case "Optimal":
+                simulator = new Optimal(pageRefString, frameNum);
+                break;
             case "Second Chance (SC)":
-                simulator = new SecondChance(pageRefString);
+                simulator = new SecondChance(pageRefString, frameNum);
                 break;
             case "Enhanced SC":
-                simulator = new EnhancedSecondChance(pageRefString);
+                simulator = new EnhancedSecondChance(pageRefString, frameNum);
                 break;
             case "LFU":
-                simulator = new LFU(pageRefString);
+                simulator = new LFU(pageRefString, frameNum);
                 break;
             case "MFU":
-                simulator = new MFU(pageRefString);
+                simulator = new MFU(pageRefString, frameNum);
                 break;
         }
+
         simulator.simulate();
     }
 
