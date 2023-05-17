@@ -9,6 +9,8 @@ import view.component.CustomTable;
 import view.component.CustomTableModel;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -19,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Random;
 
 public class InputPanel extends Panel {
@@ -35,6 +38,8 @@ public class InputPanel extends Panel {
     private PageReferenceString pageRefString;
     PageReplacementSimulator simulator;
     private boolean validStringInputs = false, validFrameNum = false;
+    private JSlider slider;
+    private int sliderValue = 2000;
     public InputPanel() {
 
         super("bg/input-panel.png");
@@ -53,14 +58,14 @@ public class InputPanel extends Panel {
         algorithmChoice.setBackground(new Color(77,58,104));
         algorithmChoice.setForeground(Color.white);
         algorithmChoice.setFont(new Font("Montserrat", Font.BOLD, 18));
-        algorithmChoice.setBounds(150, 264, 150, 44);
+        algorithmChoice.setBounds(150, 209, 150, 44);
 
         pageReferenceField = new JTextField("", 2);
         pageReferenceField.setName("pageReferenceField");
         pageReferenceField.setBorder(null);
         pageReferenceField.setHorizontalAlignment(SwingConstants.CENTER);
         pageReferenceField.setFont(new Font("Montserrat", Font.BOLD, 20));
-        pageReferenceField.setBounds(333, 143, 426, 40);
+        pageReferenceField.setBounds(333, 107, 426, 40);
         pageReferenceField.setToolTipText("Length must be 10-40. Value must be between 0 and 20");
 
         frameNumField = new JTextField("4", 2);
@@ -68,12 +73,12 @@ public class InputPanel extends Panel {
         frameNumField.setBorder(null);
         frameNumField.setHorizontalAlignment(SwingConstants.CENTER);
         frameNumField.setFont(new Font("Montserrat", Font.BOLD, 20));
-        frameNumField.setBounds(397, 267, 73, 40);
+        frameNumField.setBounds(397, 212, 73, 40);
 
         frameNumPlus = new ImageButton("buttons/add.png");
         frameNumMinus = new ImageButton("buttons/minus.png");
-        frameNumMinus.setBounds(354, 267, 44, 40);
-        frameNumPlus.setBounds(469, 267, 44, 40);
+        frameNumMinus.setBounds(354, 212, 44, 40);
+        frameNumPlus.setBounds(469, 212, 44, 40);
 
 
         importButton = new ImageButton("buttons/from-text.png");
@@ -81,14 +86,14 @@ public class InputPanel extends Panel {
         runButton = new ImageButton("buttons/run.png");
         saveButton = new ImageButton("buttons/save.png");
 
-        importButton.setBounds(597, 257, 58, 58);
-        randomizeButton.setBounds(673, 257, 58, 58);
-        runButton.setBounds(785, 257, 58, 58);
-        saveButton.setBounds(882, 258, 58, 58);
+        importButton.setBounds(597, 202, 58, 58);
+        randomizeButton.setBounds(673, 202, 58, 58);
+        runButton.setBounds(785, 202, 58, 58);
+        saveButton.setBounds(882, 202, 58, 58);
 
         tableModel = new CustomTableModel(10, 4);
         table = new CustomTable(tableModel);
-        scrollPane = table.createTablePane(51, 360, 993, 355);
+        scrollPane = table.createTablePane(51, 330, 993, 355);
 
         totalPageFault = new Label("Total Page Fault: ");
         totalPageFault.setBounds(412, 700, 225, 25);
@@ -99,7 +104,32 @@ public class InputPanel extends Panel {
 
         pageRefString = new PageReferenceString();
 
+        // slider and timer
+
+        slider = new JSlider();
+        slider.setMajorTickSpacing(25);
+        slider.setMinorTickSpacing(10);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
+        Hashtable position = new Hashtable();
+        position.put(0, new JLabel("0"));
+        position.put(25, new JLabel("1"));
+        position.put(50, new JLabel("2"));
+        position.put(75, new JLabel("3"));
+        position.put(100, new JLabel("4"));
+        slider.setLabelTable(position);
+        slider.setBackground(new Color(247, 245, 245));
+        slider.setBounds(187, 270, 246, 45);
+
+        slider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                sliderValue = ((JSlider)e.getSource()).getValue() * 100;
+                System.out.println("Value of the slider is: " + sliderValue);
+            }
+        });
+
         //Add components to frame
+        this.add(slider);
         this.add(musicOnButton);
         this.add(musicOffButton);
         this.add(homeButton);
@@ -241,6 +271,7 @@ public class InputPanel extends Panel {
     }
 
     public void listenToInputFunctions() {
+
         randomizeButton.addActionListener( e -> {
             tableModel.resetTable();
             pageReferenceField.setText(pageRefString.random()); // sets string to random
