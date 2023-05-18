@@ -7,6 +7,7 @@ import view.component.Label;
 import view.component.HighlightCellRenderer;
 import view.component.Panel;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -18,7 +19,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Random;
@@ -339,8 +343,38 @@ public class InputPanel extends Panel {
 
         saveButton.addActionListener( e -> {
             // allow pdf as output file here
+            JFileChooser fileChooser = new JFileChooser();
+            int choice = fileChooser.showSaveDialog(this);
+            if (choice == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                String format = getFileFormat(file);
+                savePanelAsImage(tablesPanel, format, file);
+            }
         });
 
+    }
+
+    private String getFileFormat(File file) {
+        String name = file.getName();
+        int dotIndex = name.lastIndexOf(".");
+        if (dotIndex > 0 && dotIndex < name.length() - 1) {
+            return name.substring(dotIndex + 1).toUpperCase();
+        }
+        return ""; // default format if extension is not provided or not recognized
+    }
+
+    private void savePanelAsImage(JPanel panel, String format, File file) {
+        try {
+            BufferedImage image = new BufferedImage(tablesPanel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics2D = image.createGraphics();
+            panel.print(graphics2D);
+            graphics2D.dispose();
+            ImageIO.write(image, format, file);
+            JOptionPane.showMessageDialog(this, "Panel saved as image successfully.");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error occurred while saving panel as image.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void simulate() {
