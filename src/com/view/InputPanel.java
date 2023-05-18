@@ -365,7 +365,7 @@ public class InputPanel extends Panel {
             case "Optimal":
                 simulator = new Optimal(pageRefString, frameNum);
                 break;
-            case "Second Chance (SC)":
+            case "Second Chance(SC)":
                 simulator = new SecondChance(pageRefString, frameNum);
                 break;
             case "Enhanced SC":
