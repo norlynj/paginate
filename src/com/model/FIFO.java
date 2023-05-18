@@ -30,23 +30,21 @@ public class FIFO extends PageReplacementSimulator {
     public void simulate() {
         steps = new ArrayList<>();
         String status =  "";
-        int currentFrame = 0;
+        int currentFrame = -1;
 
         ArrayList<Integer> s = new ArrayList<>(frameNumber);
         Queue<Integer> indexes = new LinkedList<>();
         ArrayList<Integer> pages = string.getPages();
         int pf = 0;
         for (int i = 0; i < pages.size(); i++) {
-            if (s.size() < frameNumber) {
-                if (!s.contains(pages.get(i))) {
+            if (!s.contains(pages.get(i))) {
+                if (s.size() < frameNumber) {
                     s.add(pages.get(i));
+                    currentFrame = s.size() - 1; // Set currentFrame to the index of the newly inserted page
                     pf++;
                     indexes.add(pages.get(i));
                     status = "miss";
-                    currentFrame = s.size();
-                }
-            } else {
-                if (!s.contains(pages.get(i))) {
+                } else {
                     int val = indexes.peek();
                     indexes.poll();
                     currentFrame = s.indexOf(val);
@@ -54,11 +52,12 @@ public class FIFO extends PageReplacementSimulator {
                     indexes.add(pages.get(i));
                     pf++;
                     status = "miss";
-                } else {
-                    status = "hit";
                 }
+            } else {
+                currentFrame = s.indexOf(pages.get(i));
+                status = "hit";
             }
-            steps.add(new Step(i, currentFrame, status, new ArrayList<>(s)));
+            steps.add(new Step(i, currentFrame+1, status, new ArrayList<>(s), pf));
         }
         this.pageFaults = pf;
     }

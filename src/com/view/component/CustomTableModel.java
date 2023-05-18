@@ -6,6 +6,9 @@ import java.util.Set;
 
 public class CustomTableModel extends DefaultTableModel {
 
+    public CustomTableModel() {
+        this(10, 4); // 2 extra rows for page and status
+    }
     public CustomTableModel(int columnCount, int rowCount) {
         super(rowCount+2, columnCount); // 2 extra rows for page and status
     }

@@ -59,7 +59,7 @@ public class CustomTable extends JTable {
 
         // Set different borders for header row and last column
         if (row == 0 || row == getRowCount() - 1) {
-            ((JComponent) component).setBorder(BorderFactory.createEmptyBorder());
+            ((JComponent) component).setBackground(new Color(247, 245, 245));
         } else {
             Border outerBorder = BorderFactory.createMatteBorder(1, marginSize, 1, marginSize, new Color(247, 245, 245)); // Change outer border color here
             Border innerBorder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK); // Change inner border color here
@@ -88,6 +88,13 @@ public class CustomTable extends JTable {
     public JScrollPane createTablePane(int x, int y, int width, int height) {
         JScrollPane scrollPane = new JScrollPane(this);
         scrollPane.setBounds(x, y, width, height);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(TABLE_PANE_COLOR);
+        return scrollPane;
+    }
+
+    public JScrollPane createTablePane() {
+        JScrollPane scrollPane = new JScrollPane(this);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(TABLE_PANE_COLOR);
         return scrollPane;
