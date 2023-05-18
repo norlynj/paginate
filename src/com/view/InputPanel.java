@@ -1,6 +1,9 @@
 package view;
 
 import model.*;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import view.component.*;
 import view.component.Frame;
 import view.component.Label;
@@ -13,6 +16,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,6 +26,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -343,33 +348,85 @@ public class InputPanel extends Panel {
 
         saveButton.addActionListener( e -> {
             // allow pdf as output file here
-            JFileChooser fileChooser = new JFileChooser();
-            int choice = fileChooser.showSaveDialog(this);
-            if (choice == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
-                String format = getFileFormat(file);
-                savePanelAsImage(tablesPanel, format, file);
-            }
+            saveResults(tablesPanel);
         });
 
     }
 
-    private String getFileFormat(File file) {
-        String name = file.getName();
-        int dotIndex = name.lastIndexOf(".");
-        if (dotIndex > 0 && dotIndex < name.length() - 1) {
-            return name.substring(dotIndex + 1).toUpperCase();
+    private void saveResults(JPanel panel) {
+        String[] fileFormats = {"PDF", "JPEG"};
+        JComboBox<String> formatComboBox = new JComboBox<>(fileFormats);
+
+        int result = JOptionPane.showOptionDialog(null, formatComboBox, "Save As", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String selectedFormat = (String) formatComboBox.getSelectedItem();
+
+            JFileChooser fileChooser = new JFileChooser();
+            FileNameExtensionFilter filter = null;
+            String defaultExtension = null;
+
+            if (selectedFormat.equals("PDF")) {
+                filter = new FileNameExtensionFilter("PDF Files", "pdf");
+                defaultExtension = "pdf";
+            } else if (selectedFormat.equals("JPEG")) {
+                filter = new FileNameExtensionFilter("JPEG Files", "jpg", "jpeg");
+                defaultExtension = "jpg";
+            }
+
+            fileChooser.setFileFilter(filter);
+            fileChooser.setApproveButtonText("Save");
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setSelectedFile(new File("panel." + defaultExtension));
+
+            int option = fileChooser.showSaveDialog(null);
+
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                String fileName = file.getAbsolutePath();
+                String extension = getFileExtension(file);
+
+                switch (selectedFormat) {
+                    case "PDF":
+                        if (!extension.equalsIgnoreCase("pdf")) {
+                            fileName += ".pdf";
+                        }
+                        saveResultsAsPDF(panel, new File(fileName));
+                        break;
+                    case "JPEG":
+                        if (!extension.equalsIgnoreCase("jpeg") && !extension.equalsIgnoreCase("jpg")) {
+                            fileName += ".jpg";
+                        }
+                        saveResultsAsJPEG(panel, new File(fileName));
+                        break;
+                    default:
+                        break;
+                }
+
+            }
         }
-        return ""; // default format if extension is not provided or not recognized
     }
 
-    private void savePanelAsImage(JPanel panel, String format, File file) {
+    private String getFileExtension(File file) {
+        String extension = "";
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+            extension = fileName.substring(dotIndex + 1).toLowerCase();
+        }
+        return extension;
+    }
+
+    private void saveResultsAsPDF(JPanel panel, File file) {
+    }
+
+    private void saveResultsAsJPEG(JPanel panel, File file) {
         try {
             BufferedImage image = new BufferedImage(tablesPanel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics2D graphics2D = image.createGraphics();
             panel.print(graphics2D);
             graphics2D.dispose();
-            ImageIO.write(image, format, file);
+            ImageIO.write(image, "JPEG", file);
             JOptionPane.showMessageDialog(this, "Panel saved as image successfully.");
         } catch (IOException ex) {
             ex.printStackTrace();
