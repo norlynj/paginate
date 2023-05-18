@@ -29,7 +29,7 @@ public class HowPanel extends Panel{
         defButton.setBounds(55, 157, 401, 40);
         termsButton.setBounds(463, 157, 121, 40);
         formatButton.setBounds(881, 405, 121, 40);
-        backButton.setBounds(59, 720, 47, 47);
+        backButton.setBounds(113, 277, 47, 47);
         inputButton.setBounds(591,157, 121, 40);
         outputButton.setBounds(719,157, 121, 40);
 
@@ -144,27 +144,28 @@ public class HowPanel extends Panel{
             setImage("bg/how-4.png");
             defButton.setVisible(true);
             termsButton.setVisible(true);
-            defButton.setBounds(55, 180, 455, 47);
-            termsButton.setBounds(525, 180, 156, 47);
+            defButton.setBounds(438, 156, 401, 40);
+            termsButton.setBounds(55, 157, 121, 40);
             backButton.setVisible(false);
             formatButton.setVisible(false);
             outputButton.setVisible(true);
+            outputButton.setBounds(308,157, 121, 40);
             choicesButton.setVisible(true);
-            choicesButton.setBounds(300, 118,156, 47);
+            choicesButton.setBounds(180, 157, 121, 40);
             inputButton.setVisible(false);
         });
         outputButton.addActionListener(e -> {
             setImage("bg/how-5.png");
             defButton.setVisible(true);
             termsButton.setVisible(true);
-            defButton.setBounds(55, 180, 455, 47);
-            termsButton.setBounds(525, 180, 156, 47);
+            defButton.setBounds(438, 156, 401, 40);
+            termsButton.setBounds(55, 157, 121, 40);
             backButton.setVisible(false);
             formatButton.setVisible(false);
             inputButton.setVisible(true);
-            inputButton.setBounds(465,118, 216, 47);
+            inputButton.setBounds(308,157, 121, 40);
             choicesButton.setVisible(true);
-            choicesButton.setBounds(300, 118,156, 47);
+            choicesButton.setBounds(180, 157, 121, 40);
             outputButton.setVisible(false);
         });
     }
