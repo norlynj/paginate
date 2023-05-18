@@ -43,7 +43,7 @@ public class InputPanel extends Panel {
     private CustomTableModel[] tableModels;
     private CustomTable tables[];
     private JScrollPane tablesScrollPane;
-    private JLabel totalPageFaults[];
+    private JLabel titleLabels[];
     private String[] tableTitles;
 
     private JScrollPane[] scrollPanes;
@@ -108,6 +108,13 @@ public class InputPanel extends Panel {
         pauseButton.setVisible(false);
         saveButton.setBounds(882, 202, 58, 58);
 
+        // Table titles
+        tableTitles = new String[]{"FIFO", "LRU", "OPT", "Second Chance", "Enhanced Second Chance", "LFU", "MFU"};
+        titleLabels = new JLabel[tableTitles.length];
+        for (int i = 0; i < tableTitles.length; i++) {
+            titleLabels[i] = new JLabel(tableTitles[i] + " | Page Faults: ");
+        }
+
         showAllTables();
         showOneTable();
 
@@ -121,12 +128,6 @@ public class InputPanel extends Panel {
         totalPageFault = new Label();
         totalPageFault.setBounds(412, 725, 225, 25);
         totalPageFault.setFont(new Font("Montserrat", Font.BOLD, 24));
-
-        totalPageFaults = new JLabel[tableTitles.length];
-        for (int i = 0; i < tableTitles.length; i++) {
-            totalPageFaults[i] = new JLabel(tableTitles[i] + " | Page Faults: ");
-        }
-
 
         disableOutputButtons();
         setListeners();
@@ -153,7 +154,6 @@ public class InputPanel extends Panel {
             public void stateChanged(ChangeEvent e) {
                 double val = (double)((JSlider)e.getSource()).getValue();
                 sliderValue = (int)((val / 100) * 4000); //map positions accordingly to 0, 1000, 2000, 3000
-                System.out.println("Value of the slider is: " + sliderValue);
             }
         });
 
@@ -277,9 +277,6 @@ public class InputPanel extends Panel {
         tablesPanel.setBackground(bgColor);
         tablesPanel.setLayout(new BoxLayout(tablesPanel, BoxLayout.Y_AXIS));
 
-        // Table titles
-        tableTitles = new String[]{"FIFO", "LRU", "OPT", "Second Chance", "Enhanced Second Chance", "LFU", "MFU"};
-
         // Create arrays to store table models and tables
         tableModels = new CustomTableModel[tableTitles.length];
         tables = new CustomTable[tableTitles.length];
@@ -290,10 +287,10 @@ public class InputPanel extends Panel {
             String title = tableTitles[i];
 
             // Create a label for the table title
-            JLabel titleLabel = new JLabel(title + " | Page Faults: ");
-            titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-            titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            tablesPanel.add(titleLabel);
+            titleLabels[i] = new JLabel(title + " | Page Faults: ");
+            titleLabels[i].setFont(new Font("Arial", Font.BOLD, 16));
+            titleLabels[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+            tablesPanel.add(titleLabels[i]);
 
             tableModels[i] = new CustomTableModel();
             tables[i] = new CustomTable(tableModels[i]);
@@ -301,7 +298,7 @@ public class InputPanel extends Panel {
             tablesPanel.add(scrollPanes[i]);
 
             // Add some vertical space between tables
-            tablesPanel.add(Box.createVerticalStrut(10));
+            tablesPanel.add(Box.createVerticalStrut(30));
 
             // Set the preferred size of the scroll pane to allow table height adjustment
             scrollPanes[i].setPreferredSize(new Dimension(scrollPanes[i].getPreferredSize().width, tables[i].getRowCount()*30));
@@ -454,6 +451,7 @@ public class InputPanel extends Panel {
 
         // Reset the table model and get the steps
         for (int i = 0; i < tableModels.length; i++) {
+            tableModels[i].resetTable();
         }
 
         // Stop any running timer before starting a new one
@@ -473,17 +471,17 @@ public class InputPanel extends Panel {
                     // Disable sliders and run function
                     slider.setEnabled(false);
 
+
                     for (int i = 0; i < tableModels.length; i++) {
-                        tableModels[i].resetTable();
+                        tables[i].setValueAt(pageRefString.getPages().get(stepIndex), 0, stepIndex);
                         Step step = simulators[0].getSteps().get(stepIndex);
                         for (int j = 0; j < step.getPagesProcessed().size(); j++) {
                             int row = tables[i].getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
                             tables[i].setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
-                            tables[i].setValueAt(step.getStatus(), table.getRowCount() - 1, stepIndex);
+                            tables[i].setValueAt(step.getStatus(), tables[i].getRowCount() - 1, stepIndex);
                             tables[i].getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
                         }
-                        System.out.println(step.getPageFaults());
-                        totalPageFaults[i].setText(tableTitles[i] + " | Page Faults: " + step.getPageFaults());
+                        titleLabels[i].setText(tableTitles[i] + " | Page Faults: " + step.getPageFaults());
                     }
 
                     long elapsedTime = System.currentTimeMillis() - startTime;
@@ -581,6 +579,7 @@ public class InputPanel extends Panel {
                             tableModel.setNumRows(value);
                             for (int i = 0; i < tableModels.length; i++) {
                                 tableModels[i].setNumRows(value); // for the table that shows all algo
+                                scrollPanes[i].setPreferredSize(new Dimension(scrollPanes[i].getPreferredSize().width, tables[i].getRowCount()*30));
                             }
 
                             if (validStringInputs) {
