@@ -525,7 +525,7 @@ public class InputPanel extends Panel {
                         if (!extension.equalsIgnoreCase("pdf")) {
                             file = new File(file.getAbsolutePath() + ".pdf");
                         }
-                        saveResultsAsPDF(panel, file);
+                        saveResultsAsPDF(file);
                         break;
                     case "JPEG":
                         if (!extension.equalsIgnoreCase("jpeg") && !extension.equalsIgnoreCase("jpg")) {
@@ -550,7 +550,8 @@ public class InputPanel extends Panel {
         return extension;
     }
 
-    private void saveResultsAsPDF(JPanel panel, File file) {
+    private void saveResultsAsPDF(File file) {
+        new SaveAsPdf(tables, tableTitles, file);
     }
 
     private void saveResultsAsJPEG(JPanel panel, File file) {
