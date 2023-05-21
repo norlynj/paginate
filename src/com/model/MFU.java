@@ -24,7 +24,7 @@ public class MFU extends PageReplacementSimulator {
                     freq.put(pages.get(i), 1);
                     pf++;
                     status = "miss";
-                    currentFrame = s.size();
+                    currentFrame = s.size() - 1 ;
                 } else {
                     freq.put(pages.get(i), freq.get(pages.get(i)) + 1);
                     status = "hit";
@@ -54,10 +54,11 @@ public class MFU extends PageReplacementSimulator {
                     status = "miss";
                 } else {
                     freq.put(pages.get(i), freq.get(pages.get(i)) + 1);
+                    currentFrame = s.indexOf(pages.get(i));
                     status = "hit";
                 }
             }
-            steps.add(new Step(i, currentFrame, status, new ArrayList<>(s), pf));
+            steps.add(new Step(i, currentFrame + 1, status, new ArrayList<>(s), pf));
         }
         this.pageFaults = pf;
     }
