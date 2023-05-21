@@ -61,19 +61,13 @@ public class Paginate {
         howPanel.getMusicOffButton().addActionListener(e -> soundClick());
         howPanel.getHomeButton().addActionListener(e -> cardLayout.show(contentPane, "menuPanel" ));
     }
-
-    public void listenToOutput() {
-        outputPanel.getMusicOnButton().addActionListener(e -> soundClick());
-        outputPanel.getMusicOffButton().addActionListener(e -> soundClick());
-        outputPanel.getHomeButton().addActionListener(e -> {
-            cardLayout.show(contentPane, "menuPanel");
-        });
-    }
-
     public void listenToInput(){
         inputPanel.getMusicOnButton().addActionListener(e -> soundClick());
         inputPanel.getMusicOffButton().addActionListener(e -> soundClick());
-        inputPanel.getHomeButton().addActionListener(e -> cardLayout.show(contentPane, "menuPanel" ));
+        inputPanel.getHomeButton().addActionListener(e -> {
+            cardLayout.show(contentPane, "menuPanel" );
+            inputPanel.resetTables();
+        });
     }
 
     public void soundClick() {
