@@ -10,7 +10,6 @@ public class Paginate {
     private MenuPanel menuPanel;
     private HowPanel howPanel;
     private InputPanel inputPanel;
-    private OutputPanel outputPanel;
     private Panel contentPane;
     private CardLayout cardLayout;
     private AudioPlayer audio;
@@ -25,7 +24,6 @@ public class Paginate {
         menuPanel = new MenuPanel();
         howPanel = new HowPanel();
         inputPanel = new InputPanel();
-        outputPanel = new OutputPanel();
 
         // setup the content pane and card layout
         contentPane = new Panel(true, "bg/menu-panel.png");
@@ -37,7 +35,6 @@ public class Paginate {
         contentPane.add(howPanel, "howPanel");
 
         contentPane.add(inputPanel, "inputPanel");
-        contentPane.add(outputPanel, "outputPanel");
 
         listenToMenu();
         listenToInput();
@@ -73,7 +70,6 @@ public class Paginate {
     public void soundClick() {
         menuPanel.musicClick();
         inputPanel.musicClick();
-        outputPanel.musicClick();
         howPanel.musicClick();
         if (audio.isPlaying()) {
             audio.stop();
