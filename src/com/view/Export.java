@@ -3,123 +3,72 @@ package view;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import view.component.CustomTable;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
 public class Export {
-
-
     public void saveAsPDF(CustomTable[] tables, String[] tableTitles, File file) {
-        try (PDDocument document = new PDDocument()) {
-            PDType0Font font = PDType0Font.load(document, getClass().getResourceAsStream("/font/Montserrat-Regular.ttf"));
+        try {
+            PDDocument document = new PDDocument();
+            float marginLeft = 30; // Left margin
+            float marginRight = 30; // Right margin
 
-            int tablesPerPage = 2;
-            int tableIndex = 0;
-            int totalPages = (int) Math.ceil((double) tables.length / tablesPerPage);
+            for (int i = 0; i < tables.length; i++) {
+                CustomTable table = tables[i];
+                String tableTitle = tableTitles[i];
 
-            for (int pageNum = 0; pageNum < totalPages; pageNum++) {
-                PDPage page = new PDPage();
+                PDType0Font font = PDType0Font.load(document, getClass().getResourceAsStream("/font/Montserrat-Regular.ttf"));
+
+                // Create a new page for each table
+                PDPage page = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth())); // Set the page orientation to landscape
                 document.addPage(page);
+
+                // Load the table as an image
+                BufferedImage tableImage = new BufferedImage(table.getWidth(), table.getHeight(), BufferedImage.TYPE_INT_RGB);
+                Graphics2D g2d = tableImage.createGraphics();
+                table.print(g2d);
+                g2d.dispose();
+
+                // Convert the image to PDImageXObject
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(tableImage, "png", baos);
+                PDImageXObject imageXObject = PDImageXObject.createFromByteArray(document, baos.toByteArray(), "png");
+
+                // Start writing the content to the page
                 PDPageContentStream contentStream = new PDPageContentStream(document, page);
 
-                // Set the position to start writing
-                float startX = 50;
-                float startY = page.getMediaBox().getHeight() - 50;
+                // Calculate the scaling factor based on the table width and page width
+                float scaleFactor = (page.getMediaBox().getWidth() - marginLeft - marginRight) / (float) tableImage.getWidth();
 
-                // Set font properties
-                contentStream.setFont(font, 12);
+                // Calculate the adjusted image width and height
+                float adjustedImageWidth = tableImage.getWidth() * scaleFactor;
+                float adjustedImageHeight = tableImage.getHeight() * scaleFactor;
 
-                int tablesOnPage = Math.min(tablesPerPage, tables.length - tableIndex);
-                for (int i = 0; i < tablesOnPage; i++) {
-                    CustomTable table = tables[tableIndex];
-                    String tableTitle = tableTitles[tableIndex];
+                // Calculate the position to center the image horizontally
+                float startX = marginLeft + (page.getMediaBox().getWidth() - marginLeft - marginRight - adjustedImageWidth) / 2;
 
-                    // Write the table title
-                    contentStream.beginText();
-                    contentStream.newLineAtOffset(startX, startY);
-                    contentStream.showText(tableTitle);
-                    contentStream.endText();
+                // Calculate the position to place the image vertically
+                float startY = page.getMediaBox().getHeight() - adjustedImageHeight - 80;
 
-                    // Set the position to start drawing the table
-                    startY -= 20;
+                // Draw the table image with adjusted size
+                contentStream.drawImage(imageXObject, startX, startY, adjustedImageWidth, adjustedImageHeight);
 
-                    // Set the row height and column width
-                    float rowHeight = 20;
-                    float tableWidth = page.getMediaBox().getWidth() - 2 * startX;
-                    float tableHeight = rowHeight * table.getRowCount();
-
-                    // Set the intercell spacing
-                    float cellSpacing = 2;
-
-                    // Draw the table headers
-                    contentStream.setLineWidth(1f);
-                    contentStream.setFont(font, 10);
-                    float nextY = startY;
-                    for (int col = 0; col < table.getColumnCount(); col++) {
-                        float nextX = startX + col * tableWidth / table.getColumnCount();
-                        String headerValue = table.getValueAt(0, col).toString();
-                        contentStream.beginText();
-                        contentStream.newLineAtOffset(nextX, nextY);
-                        contentStream.showText(headerValue);
-                        contentStream.endText();
-                    }
-
-                    // Draw the table rows
-                    contentStream.setFont(font, 10);
-                    for (int row = 1; row < table.getRowCount(); row++) {
-                        nextY -= rowHeight;
-                        for (int col = 0; col < table.getColumnCount(); col++) {
-                            float nextX = startX + col * tableWidth / table.getColumnCount();
-                            Object cellValue = table.getValueAt(row, col);
-                            if (cellValue != null) {
-                                String cellText = String.valueOf(cellValue);
-
-                                // Draw border for each cell
-                                contentStream.setLineWidth(1f);
-                                float boxX = nextX + cellSpacing / 2;
-                                float boxY = nextY + cellSpacing / 2;
-                                float boxWidth = tableWidth / table.getColumnCount() - cellSpacing;
-                                float boxHeight = rowHeight - cellSpacing;
-
-                                // Draw left border
-                                contentStream.moveTo(boxX, boxY);
-                                contentStream.lineTo(boxX, boxY + boxHeight);
-                                contentStream.stroke();
-
-                                // Draw right border
-                                contentStream.moveTo(boxX + boxWidth, boxY);
-                                contentStream.lineTo(boxX + boxWidth, boxY + boxHeight);
-                                contentStream.stroke();
-
-                                // Draw top border
-                                contentStream.moveTo(boxX, boxY + boxHeight);
-                                contentStream.lineTo(boxX + boxWidth, boxY + boxHeight);
-                                contentStream.stroke();
-
-                                // Draw bottom border
-                                contentStream.moveTo(boxX, boxY);
-                                contentStream.lineTo(boxX + boxWidth, boxY);
-                                contentStream.stroke();
-
-                                // Write cell text
-                                contentStream.beginText();
-                                contentStream.newLineAtOffset(boxX, boxY + boxHeight - 2);  // Adjust text position
-                                contentStream.showText(cellText);
-                                contentStream.endText();
-                            }
-                        }
-                    }
-
-                    startY -= tableHeight + 50;
-                    tableIndex++;
-                }
+                // Write the table title
+                contentStream.beginText();
+                contentStream.setFont(font, 20);
+                contentStream.newLineAtOffset(marginLeft, startY + adjustedImageHeight + 15);
+                contentStream.showText(tableTitle);
+                contentStream.endText();
 
                 // Close the content stream
                 contentStream.close();
@@ -127,11 +76,12 @@ public class Export {
 
             // Save the PDF file
             document.save(file);
-            JOptionPane.showMessageDialog(null, "Results saved successfully.");
+            JOptionPane.showMessageDialog(null, "Tables saved as PDF successfully.");
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error occurred while saving the results.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error occurred while saving the tables as PDF.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     public void saveAsJPEG(JPanel panel, File file) {
         try {
