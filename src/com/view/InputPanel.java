@@ -253,10 +253,12 @@ public class InputPanel extends Panel {
                 case "Simulate all":
                     tablesScrollPane.setVisible(true);
                     tableScrollPane.setVisible(false);
+                    totalPageFault.setVisible(false);
                     break;
                 default:
                     tablesScrollPane.setVisible(false);
                     tableScrollPane.setVisible(true);
+                    totalPageFault.setVisible(true);
                     break;
 
             }
@@ -582,7 +584,7 @@ public class InputPanel extends Panel {
                 for (int i = 0; i < simulators.length; i++) {
                     simulators[i].simulate();
                 }
-                populateResultTables();
+                populateResultTable(true);
                 return;
             case "FIFO":
                 simulator = new FIFO(pageRefString, frameNum);
@@ -608,13 +610,12 @@ public class InputPanel extends Panel {
         }
 
         simulator.simulate();
-        populateResultTable();
+        populateResultTable(false);
     }
 
-    private void populateResultTable() {
-        // Reset the table model and get the steps
+    private void populateResultTable(boolean simulateAll) {
         totalPageFault.setText("");
-        ArrayList<Step> steps = simulator.getSteps();
+        ArrayList<Step> steps = simulateAll ? simulators[0].getSteps() : simulator.getSteps();
         int count = 0;
 
         // Stop any running timer before starting a new one
@@ -631,77 +632,34 @@ public class InputPanel extends Panel {
             public void actionPerformed(ActionEvent e) {
                 // Check if there are more steps to process
                 if (stepIndex < steps.size()) {
-                    // disable sliders and run function
-                    slider.setEnabled(false);
-                    saveButton.setEnabled(false);
-
-
-                    Step step = steps.get(stepIndex);
-                    table.setValueAt(pageRefString.getPages().get(stepIndex), 0, stepIndex);
-
-                    long elapsedTime = System.currentTimeMillis() - startTime;
-                    long seconds = (elapsedTime / 1000) % 60;
-                    String time = String.format("%02d:%02d", seconds / 60, seconds % 60);
-                    timerLabel.setText("TIMER: " + time);
-
-                    // Iterate over the pages processed in the current step
-                    for (int j = 0; j < step.getPagesProcessed().size(); j++) {
-                        int row = table.getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
-                        table.setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
-
-                    }
-                    table.setValueAt(step.getStatus(), table.getRowCount() - 1, stepIndex);
-                    table.getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
-                    totalPageFault.setText("Page Fault: " + String.valueOf(step.getPageFaults()));
-                    stepIndex++; // Move to the next step
-                } else {
-                    // enable sliders and run function
-                    slider.setEnabled(true);
-                    pauseButton.setVisible(false);
-                    runButton.setVisible(true);
-                    saveButton.setEnabled(true);
-
-                    // All steps have been processed, stop the timer
-                    totalPageFault.setText("Page Fault: " + String.valueOf(simulator.getPageFaults()));
-                    timer.stop();
-                }
-            }
-        });
-
-        // Start the timer
-        timer.start();
-    }
-
-    public void populateResultTables() {
-        totalPageFault.setText("");
-        // Stop any running timer before starting a new one
-        if (timer != null && timer.isRunning()) {
-            timer.stop();
-        }
-
-        // Create a new timer with an interval of 1000 milliseconds (1 second)
-        timer = new Timer(sliderValue, new ActionListener() {
-            private int stepIndex = 0; // Start from the first step (0th index)
-            long startTime = System.currentTimeMillis();
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Check if there are more steps to process
-                if (stepIndex < simulators[0].getSteps().size()) {
                     // Disable sliders and run function
                     slider.setEnabled(false);
                     saveButton.setEnabled(false);
 
-                    for (int i = 0; i < tableModels.length; i++) {
-                        tables[i].setValueAt(pageRefString.getPages().get(stepIndex), 0, stepIndex);
-                        Step step = simulators[i].getSteps().get(stepIndex);
-                        for (int j = 0; j < step.getPagesProcessed().size(); j++) {
-                            int row = tables[i].getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
-                            tables[i].setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
+                    if (simulateAll) {
+                        for (int i = 0; i < tableModels.length; i++) {
+                            tables[i].setValueAt(pageRefString.getPages().get(stepIndex), 0, stepIndex);
+                            Step step = simulators[i].getSteps().get(stepIndex);
+                            for (int j = 0; j < step.getPagesProcessed().size(); j++) {
+                                int row = tables[i].getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
+                                tables[i].setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
+                            }
+                            tables[i].setValueAt(step.getStatus(), tables[i].getRowCount() - 1, stepIndex);
+                            tables[i].getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
+                            titleLabels[i].setText(tableTitles[i] + " | Page Faults: " + step.getPageFaults());
                         }
-                        tables[i].setValueAt(step.getStatus(), tables[i].getRowCount() - 1, stepIndex);
-                        tables[i].getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
-                        titleLabels[i].setText(tableTitles[i] + " | Page Faults: " + step.getPageFaults());
+                    } else {
+                        Step step = steps.get(stepIndex);
+                        table.setValueAt(pageRefString.getPages().get(stepIndex), 0, stepIndex);
+
+                        for (int j = 0; j < step.getPagesProcessed().size(); j++) {
+                            int row = table.getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
+                            table.setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
+                        }
+
+                        table.setValueAt(step.getStatus(), table.getRowCount() - 1, stepIndex);
+                        table.getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
+                        totalPageFault.setText("Page Fault: " + String.valueOf(step.getPageFaults()));
                     }
 
                     long elapsedTime = System.currentTimeMillis() - startTime;
@@ -718,6 +676,11 @@ public class InputPanel extends Panel {
                     saveButton.setEnabled(true);
 
                     // All steps have been processed, stop the timer
+                    if (simulateAll) {
+                        totalPageFault.setText("Page Fault: " + String.valueOf(simulators[0].getPageFaults()));
+                    } else {
+                        totalPageFault.setText("Page Fault: " + String.valueOf(simulator.getPageFaults()));
+                    }
                     timer.stop();
                 }
             }
@@ -726,6 +689,7 @@ public class InputPanel extends Panel {
         // Start the timer
         timer.start();
     }
+
 
     public static void main(String[] args) {
         InputPanel m = new InputPanel();
