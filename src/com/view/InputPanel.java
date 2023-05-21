@@ -9,6 +9,7 @@ import view.component.Panel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -25,10 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Random;
+import java.util.*;
 
 public class InputPanel extends Panel {
     Color bgColor = new Color(247, 245, 245);
@@ -522,7 +520,11 @@ public class InputPanel extends Panel {
                         if (!extension.equalsIgnoreCase("pdf")) {
                             file = new File(file.getAbsolutePath() + ".pdf");
                         }
-                        new Export().saveAsPDF(tables, tableTitles, file);
+
+                        String[] labelStrings = Arrays.stream(titleLabels)
+                                .map(JLabel::getText)
+                                .toArray(String[]::new);
+                        new Export().saveAsPDF(tables, labelStrings, file);
                         break;
                     case "JPEG":
                         if (!extension.equalsIgnoreCase("jpeg") && !extension.equalsIgnoreCase("jpg")) {
@@ -656,9 +658,7 @@ public class InputPanel extends Panel {
                     saveButton.setEnabled(true);
 
                     // All steps have been processed, stop the timer
-                    if (simulateAll) {
-                        totalPageFault.setText("Page Fault: " + String.valueOf(simulators[0].getPageFaults()));
-                    } else {
+                    if (!simulateAll) {
                         totalPageFault.setText("Page Fault: " + String.valueOf(simulator.getPageFaults()));
                     }
                     timer.stop();
