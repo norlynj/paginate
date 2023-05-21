@@ -76,7 +76,7 @@ public class InputPanel extends Panel {
         homeButton.setBounds(1010, 25, 47, 47);
         musicOffButton.setVisible(false);
 
-        algorithmChoice = new JComboBox(new String[]{"Simulate all", "FIFO", "LRU", "OPT", "Second Chance(SC)", "Enhanced SC", "LFU", "MFU"});
+        algorithmChoice = new JComboBox(new String[]{"Simulate all", "FIFO", "LRU", "Optimal", "Second Chance(SC)", "Enhanced SC", "LFU", "MFU"});
         algorithmChoice.setRenderer(new CustomComboBoxRenderer());
         algorithmChoice.setBackground(new Color(77,58,104));
         algorithmChoice.setForeground(Color.white);
@@ -462,7 +462,7 @@ public class InputPanel extends Panel {
             case "Optimal":
                 simulator = new Optimal(pageRefString, frameNum);
                 break;
-            case "Second Chance (SC)":
+            case "Second Chance(SC)":
                 simulator = new SecondChance(pageRefString, frameNum);
                 break;
             case "Enhanced SC":
