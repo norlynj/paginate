@@ -24,6 +24,9 @@ public class LRU extends PageReplacementSimulator{
                     pf++;
                     status = "miss";
                     currentFrame = s.size() - 1;
+                } else {
+                    status = "hit";
+                    currentFrame = s.indexOf(pages.get(i));
                 }
                 indexes.put(pages.get(i), i);
             } else {

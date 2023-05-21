@@ -27,6 +27,7 @@ public class MFU extends PageReplacementSimulator {
                     currentFrame = s.size() - 1 ;
                 } else {
                     freq.put(pages.get(i), freq.get(pages.get(i)) + 1);
+                    currentFrame = s.indexOf(pages.get(i));
                     status = "hit";
                 }
             } else {
