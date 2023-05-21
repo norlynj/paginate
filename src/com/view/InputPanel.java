@@ -1,9 +1,6 @@
 package view;
 
 import model.*;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import view.component.*;
 import view.component.Frame;
 import view.component.Label;
@@ -525,13 +522,13 @@ public class InputPanel extends Panel {
                         if (!extension.equalsIgnoreCase("pdf")) {
                             file = new File(file.getAbsolutePath() + ".pdf");
                         }
-                        saveResultsAsPDF(file);
+                        new Export().saveAsPDF(tables, tableTitles, file);
                         break;
                     case "JPEG":
                         if (!extension.equalsIgnoreCase("jpeg") && !extension.equalsIgnoreCase("jpg")) {
                             file = new File(file.getAbsolutePath() + ".jpg");
                         }
-                        saveResultsAsJPEG(panel, file);
+                        new Export().saveAsJPEG(panel, file);
                         break;
                     default:
                         break;
@@ -548,24 +545,6 @@ public class InputPanel extends Panel {
             extension = fileName.substring(dotIndex + 1).toLowerCase();
         }
         return extension;
-    }
-
-    private void saveResultsAsPDF(File file) {
-        new SaveAsPdf(tables, tableTitles, file);
-    }
-
-    private void saveResultsAsJPEG(JPanel panel, File file) {
-        try {
-            BufferedImage image = new BufferedImage(tablesPanel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics2D graphics2D = image.createGraphics();
-            panel.print(graphics2D);
-            graphics2D.dispose();
-            ImageIO.write(image, "JPEG", file);
-            JOptionPane.showMessageDialog(this, "Image saved successfully.");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error occurred while saving image.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     private void simulate() {
