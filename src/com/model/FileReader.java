@@ -44,7 +44,7 @@ public class FileReader {
                 }
                 for (String pageReferenceString : pageReferenceStringArray) {
                     int value = Integer.parseInt(pageReferenceString);
-                    if (value < 1 || value > 19) {
+                    if (value < 0 || value > 20) {
                         invalid = true;
                     }
                     inputList.add(value);
@@ -54,6 +54,9 @@ public class FileReader {
                 // Read number of frames
                 String numberOfFramesLine = scanner.nextLine();
                 int numberOfFrames = Integer.parseInt(numberOfFramesLine.split(": ")[1]);
+                if (numberOfFrames < 3 || numberOfFrames > 10) {
+                    invalid = true;
+                }
 
                 scanner.close();
 
@@ -68,7 +71,7 @@ public class FileReader {
             return false;
         }
         if (invalid) {
-            JOptionPane.showMessageDialog(null, "Length must be 10 to 40 while values must be between 0 and 20 ");
+            JOptionPane.showMessageDialog(null, "Please recheck inputs to follow the defined bounds");
             return false;
         }
         return true;
