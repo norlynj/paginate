@@ -28,7 +28,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Random;
 
@@ -150,11 +152,11 @@ public class InputPanel extends Panel {
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
         Hashtable position = new Hashtable();
-        position.put(0, new JLabel("0"));
-        position.put(25, new JLabel("1"));
-        position.put(50, new JLabel("2"));
-        position.put(75, new JLabel("3"));
-        position.put(100, new JLabel("4"));
+        position.put(0, new JLabel("0s"));
+        position.put(25, new JLabel("1s"));
+        position.put(50, new JLabel("2s"));
+        position.put(75, new JLabel("3s"));
+        position.put(100, new JLabel("4s"));
         slider.setLabelTable(position);
         slider.setBackground(bgColor);
         slider.setBounds(190, 288, 246, 45);
@@ -377,35 +379,38 @@ public class InputPanel extends Panel {
             fileChooser.setFileFilter(filter);
             fileChooser.setApproveButtonText("Save");
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setSelectedFile(new File("panel." + defaultExtension));
+
+            // Generate the file name using the desired format
+            String formattedDate = new SimpleDateFormat("MMddyy_HHmmss").format(new Date());
+            String fileName = String.format("%s_PG.%s", formattedDate, defaultExtension);
+            fileChooser.setSelectedFile(new File(fileName));
 
             int option = fileChooser.showSaveDialog(null);
 
             if (option == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                String fileName = file.getAbsolutePath();
                 String extension = getFileExtension(file);
 
                 switch (selectedFormat) {
                     case "PDF":
                         if (!extension.equalsIgnoreCase("pdf")) {
-                            fileName += ".pdf";
+                            file = new File(file.getAbsolutePath() + ".pdf");
                         }
-                        saveResultsAsPDF(panel, new File(fileName));
+                        saveResultsAsPDF(panel, file);
                         break;
                     case "JPEG":
                         if (!extension.equalsIgnoreCase("jpeg") && !extension.equalsIgnoreCase("jpg")) {
-                            fileName += ".jpg";
+                            file = new File(file.getAbsolutePath() + ".jpg");
                         }
-                        saveResultsAsJPEG(panel, new File(fileName));
+                        saveResultsAsJPEG(panel, file);
                         break;
                     default:
                         break;
                 }
-
             }
         }
     }
+
 
     private String getFileExtension(File file) {
         String extension = "";
@@ -565,7 +570,7 @@ public class InputPanel extends Panel {
 
                     for (int i = 0; i < tableModels.length; i++) {
                         tables[i].setValueAt(pageRefString.getPages().get(stepIndex), 0, stepIndex);
-                        Step step = simulators[0].getSteps().get(stepIndex);
+                        Step step = simulators[i].getSteps().get(stepIndex);
                         for (int j = 0; j < step.getPagesProcessed().size(); j++) {
                             int row = tables[i].getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
                             tables[i].setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
