@@ -23,7 +23,7 @@ public class LRU extends PageReplacementSimulator{
                     s.add(pages.get(i));
                     pf++;
                     status = "miss";
-                    currentFrame = s.size();
+                    currentFrame = s.size() - 1;
                 }
                 indexes.put(pages.get(i), i);
             } else {
@@ -47,11 +47,12 @@ public class LRU extends PageReplacementSimulator{
                     pf++;
                     status = "miss";
                 } else {
+                    currentFrame = s.indexOf(pages.get(i));
                     status = "hit";
                 }
                 indexes.put(pages.get(i), i);
             }
-            steps.add(new Step(i, currentFrame, status, new ArrayList<>(s), pf));
+            steps.add(new Step(i, currentFrame + 1, status, new ArrayList<>(s), pf));
         }
         this.pageFaults = pf;
     }
