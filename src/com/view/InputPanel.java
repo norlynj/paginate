@@ -244,7 +244,7 @@ public class InputPanel extends Panel {
     public void listenToInputFunctions() {
 
         randomizeButton.addActionListener( e -> {
-            tableModel.resetTable();
+            resetTables();
             pageReferenceField.setText(pageRefString.random()); // sets string to random
             frameNumField.setText(Integer.toString(new Random().nextInt(6) + 4));
         });
@@ -258,6 +258,7 @@ public class InputPanel extends Panel {
                     pageRefString.setString(inputList);
                     pageReferenceField.setText(pageRefString.getString()); // sets string to random
                     frameNumField.setText(Integer.toString(fr.getFrameNumber()));
+                    resetTables();
                 }
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(ex);
@@ -484,9 +485,19 @@ public class InputPanel extends Panel {
         simulator.simulate();
         populateResultTable();
     }
-    private void populateResultTable() {
+
+    private void resetTables() {
         // Reset the table model and get the steps
         tableModel.resetTable();
+        table.clearCellRendererBackground();
+        for (int i = 0; i < tableModels.length; i++) {
+            tableModels[i].resetTable();
+            tables[i].clearCellRendererBackground();
+        }
+    }
+    private void populateResultTable() {
+        // Reset the table model and get the steps
+       resetTables();
         totalPageFault.setText("");
         ArrayList<Step> steps = simulator.getSteps();
         int count = 0;
@@ -520,9 +531,10 @@ public class InputPanel extends Panel {
                     for (int j = 0; j < step.getPagesProcessed().size(); j++) {
                         int row = table.getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
                         table.setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
-                        table.setValueAt(step.getStatus(), table.getRowCount() - 1, stepIndex);
-                        table.getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
+
                     }
+                    table.setValueAt(step.getStatus(), table.getRowCount() - 1, stepIndex);
+                    table.getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
                     totalPageFault.setText("Page Fault: " + String.valueOf(step.getPageFaults()));
                     stepIndex++; // Move to the next step
                 } else {
@@ -545,10 +557,7 @@ public class InputPanel extends Panel {
     public void populateResultTables() {
         totalPageFault.setText("");
 
-        // Reset the table model and get the steps
-        for (int i = 0; i < tableModels.length; i++) {
-            tableModels[i].resetTable();
-        }
+        resetTables();
 
         // Stop any running timer before starting a new one
         if (timer != null && timer.isRunning()) {
@@ -574,9 +583,9 @@ public class InputPanel extends Panel {
                         for (int j = 0; j < step.getPagesProcessed().size(); j++) {
                             int row = tables[i].getRowCount() - j - 2; // Subtract 2 to account for header and footer rows
                             tables[i].setValueAt(step.getPagesProcessed().get(j), row, stepIndex);
-                            tables[i].setValueAt(step.getStatus(), tables[i].getRowCount() - 1, stepIndex);
-                            tables[i].getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
                         }
+                        tables[i].setValueAt(step.getStatus(), tables[i].getRowCount() - 1, stepIndex);
+                        tables[i].getColumnModel().getColumn(stepIndex).setCellRenderer(new HighlightCellRenderer(step.getFrame(), stepIndex, table.getRowCount(), step.isHit()));
                         titleLabels[i].setText(tableTitles[i] + " | Page Faults: " + step.getPageFaults());
                     }
 

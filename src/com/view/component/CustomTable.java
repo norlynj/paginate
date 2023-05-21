@@ -2,7 +2,6 @@ package view.component;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
@@ -11,8 +10,6 @@ import java.awt.*;
 public class CustomTable extends JTable {
     private final Color TABLE_PANE_COLOR = new Color(247, 245, 245);
     private final Font TABLE_FONT = new Font("Montserrat", Font.PLAIN, 14);
-
-    private Border cellBorder;
 
     public CustomTable(CustomTableModel tableModel) {
         super(tableModel);
@@ -47,6 +44,8 @@ public class CustomTable extends JTable {
     @Override
     public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
         Component component = super.prepareRenderer(renderer, row, column);
+        //retain the HighlightCellRenderer cell bg on each column
+        component.setBackground(((JComponent) component).getBackground());
 
         int marginSize = 8;
         // Set the cell border
@@ -102,8 +101,7 @@ public class CustomTable extends JTable {
 
     private void updateCellRenderer(int row, int col) {
         try {
-            setIntercellSpacing(new Dimension(0, 0));
-            setCenter();
+            repaint();
         } catch (Exception ex) {
 
         }
@@ -114,4 +112,15 @@ public class CustomTable extends JTable {
         setCellSelectionEnabled(false);
         return false;
     }
+
+    public void clearCellRendererBackground() {
+        for (int row = 0; row < getRowCount(); row++) {
+            for (int column = 0; column < getColumnCount(); column++) {
+                Component component = prepareRenderer(getDefaultRenderer(Object.class), row, column);
+                component.setBackground(null);
+            }
+        }
+    }
+
+
 }
