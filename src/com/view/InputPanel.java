@@ -216,6 +216,17 @@ public class InputPanel extends Panel {
     }
 
     private void setListeners() {
+        //hover state
+        musicOnButton.hover("buttons/volume-off-hover.png", "buttons/volume-on.png");
+        musicOffButton.hover("buttons/volume-on-hover.png", "buttons/volume-off.png");
+        homeButton.hover("buttons/home-hover.png", "buttons/home.png");
+        frameNumMinus.hover("buttons/minus-hover.png", "buttons/minus.png");
+        frameNumPlus.hover("buttons/add-hover.png", "buttons/add.png");
+        importButton.hover("buttons/from-text-hover.png", "buttons/from-text.png");
+        randomizeButton.hover("buttons/randomize-hover.png", "buttons/randomize.png");
+        runButton.hover("buttons/run-hover.png", "buttons/run.png");
+        saveButton.hover("buttons/save-hover.png", "buttons/save.png");
+
         musicOnButton.addActionListener(e -> {
             musicOnButton.setVisible(false);
             musicOffButton.setVisible(true);
