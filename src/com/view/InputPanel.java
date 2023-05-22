@@ -261,11 +261,13 @@ public class InputPanel extends Panel {
                     tablesScrollPane.setVisible(true);
                     tableScrollPane.setVisible(false);
                     totalPageFault.setVisible(false);
+                    saveButton.setVisible(true);
                     break;
                 default:
                     tablesScrollPane.setVisible(false);
                     tableScrollPane.setVisible(true);
                     totalPageFault.setVisible(true);
+                    saveButton.setVisible(false);
                     break;
 
             }
