@@ -24,7 +24,7 @@ public class LFU extends PageReplacementSimulator {
                     freq.put(pages.get(i), 1);
                     pf++;
                     status = "miss";
-                    currentFrame = s.size();
+                    currentFrame = s.size() - 1;
                 } else {
                     freq.put(pages.get(i), freq.get(pages.get(i)) + 1);
                     currentFrame = s.indexOf(pages.get(i));
