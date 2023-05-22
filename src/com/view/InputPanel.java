@@ -6,8 +6,6 @@ import view.component.Frame;
 import view.component.Label;
 import view.component.HighlightCellRenderer;
 import view.component.Panel;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
@@ -21,10 +19,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -200,9 +196,11 @@ public class InputPanel extends Panel {
         if (pageRefString.getPages() != null) {
             tableModel.setRowCount(Integer.parseInt(frameNumField.getText()));
             tableModel.setColumnCount(pageRefString.getPages().size());
+            tableModel.resetTable();
             for (CustomTableModel model : tableModels) {
                 model.setRowCount(Integer.parseInt(frameNumField.getText()));
                 model.setColumnCount(pageRefString.getPages().size());
+                model.resetTable();
             }
         }
 
@@ -359,15 +357,11 @@ public class InputPanel extends Panel {
             private void validateInput() {
                 try {
                     String str = input.getText();
-                    boolean valid = false ;
                     if (input.getName().equals("frameNumField")) {
                         int value = Integer.parseInt(str);
                         if (value < FRAME_SIZE_MIN || value > FRAME_SIZE_MAX) {
                             // If the value is out of range, highlight the text field
-                            input.setBackground(new Color(255, 202, 202));
-                            disableOutputButtons();
-                            validFrameNum = false;
-
+                            invalidate(true);
                         } else {
                             input.setBackground(UIManager.getColor("TextField.background"));
                             tableModel.setNumRows(value);
@@ -398,9 +392,7 @@ public class InputPanel extends Panel {
                                     numList.add(value);
                                     // Check that each integer value in the input is between 0 and 20
                                     if (value < STRING_VAL_MIN || value > STRING_VAL_MAX) {
-                                        input.setBackground(new Color(255, 202, 202));
-                                        disableOutputButtons();
-                                        validStringInputs = false;
+                                        invalidate(false);
                                     } else {
                                         input.setBackground(UIManager.getColor("TextField.background"));
                                         pageRefString.setString(numList);
@@ -416,19 +408,25 @@ public class InputPanel extends Panel {
                                     }
                                 }
                             } else {
-                                input.setBackground(new Color(255, 202, 202));
-                                disableOutputButtons();
-                                validStringInputs = false;
+                               invalidate(false);
                             }
                         } else {
-                            input.setBackground(new Color(255, 202, 202));
-                            disableOutputButtons();
-                            validStringInputs = false;
+                            invalidate(false);
                         }
                     }
                 } catch (NumberFormatException ex) {
                     // If the input cannot be parsed as an integer, highlight the text field
                     input.setBackground(new Color(255, 202, 202));
+                }
+            }
+
+            private void invalidate(boolean frameNum) {
+                input.setBackground(new Color(255, 202, 202));
+                disableOutputButtons();
+                if (frameNum) {
+                    validFrameNum = false;
+                } else {
+                    validStringInputs = false;
                 }
             }
         });
