@@ -470,9 +470,6 @@ public class InputPanel extends Panel {
         this.add(tablesScrollPane);
     }
 
-
-
-
     private static class CustomComboBoxRenderer extends BasicComboBoxRenderer {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -681,14 +678,12 @@ public class InputPanel extends Panel {
         timer.start();
     }
 
-
     public static void main(String[] args) {
         InputPanel m = new InputPanel();
         Frame frame = new Frame("Input Panel");
         frame.add(m);
         frame.setVisible(true);
     }
-
 
     public void musicClick() {
         if (musicOffButton.isVisible()){
