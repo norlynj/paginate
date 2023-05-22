@@ -197,12 +197,15 @@ public class InputPanel extends Panel {
 
     public void resetTables() {
         // Reset the table model and get the steps
-        tableModel.resetTable();
-        table.clearCellRendererBackground();
-        for (int i = 0; i < tableModels.length; i++) {
-            tableModels[i].resetTable();
-            tables[i].clearCellRendererBackground();
+        if (pageRefString.getPages() != null) {
+            tableModel.setRowCount(Integer.parseInt(frameNumField.getText()));
+            tableModel.setColumnCount(pageRefString.getPages().size());
+            for (CustomTableModel model : tableModels) {
+                model.setRowCount(Integer.parseInt(frameNumField.getText()));
+                model.setColumnCount(pageRefString.getPages().size());
+            }
         }
+
     }
 
 
