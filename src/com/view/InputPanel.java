@@ -51,7 +51,7 @@ public class InputPanel extends Panel {
     private PageReferenceString pageRefString;
     PageReplacementSimulator[] simulators;
     PageReplacementSimulator simulator;
-    private boolean validStringInputs = false, validFrameNum = false;
+    private boolean validStringInputs = true, validFrameNum = true;
     private JSlider slider;
     private int sliderValue = 2000;
     private Timer timer;
@@ -372,10 +372,10 @@ public class InputPanel extends Panel {
                                 scrollPanes[i].setPreferredSize(new Dimension(scrollPanes[i].getPreferredSize().width, tables[i].getRowCount()*30));
                             }
 
+                            validFrameNum = true;
                             if (validStringInputs) {
                                 enableOutputButtons();
                             }
-                            validFrameNum = true;
 
                         }
                     } else if(input.getName().equals("pageReferenceField")) {
@@ -402,11 +402,10 @@ public class InputPanel extends Panel {
                                         for (int i = 0; i < tableModels.length; i++) {
                                             tableModels[i].setColumnCount(parts.length); // for the table that shows all algo
                                         }
-
+                                        validStringInputs = true;
                                         if (validFrameNum) {
                                             enableOutputButtons();
                                         }
-                                        validStringInputs = true;
                                     }
                                 }
                             } else {
@@ -419,6 +418,7 @@ public class InputPanel extends Panel {
                 } catch (NumberFormatException ex) {
                     // If the input cannot be parsed as an integer, highlight the text field
                     input.setBackground(new Color(255, 202, 202));
+                    disableOutputButtons();
                 }
             }
 
