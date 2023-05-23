@@ -49,12 +49,22 @@ public class LFU extends PageReplacementSimulator {
                         }
                     }
 
-                    // Remove values from fifoQueue that are not in leastFrequentPages
-                    fifoQueue.removeIf(page -> !leastFrequentPages.contains(page));
+                    // Find the first element among the nearest to the exit element that belongs to mostFrequentPages
+                    int nearestToExit = -1;
+                    List<Integer> tempList = new ArrayList<>(fifoQueue);
+
+                    for (int page : leastFrequentPages) {
+                        int index = tempList.indexOf(page);
+                        if (index != -1 && (nearestToExit == -1 || index < tempList.indexOf(nearestToExit))) {
+                            nearestToExit = page;
+                        }
+                    }
+
                     int lfuPage = leastFrequentPages.get(0);
 
                     if (minFreqCount > 1) {
-                        lfuPage = fifoQueue.poll();
+                        lfuPage = nearestToExit;
+                        fifoQueue.poll();
                         fifoQueue.add(pages.get(i));
                     } else {
                         for (int j = 1; j < leastFrequentPages.size(); j++) {
@@ -63,6 +73,13 @@ public class LFU extends PageReplacementSimulator {
                             }
                         }
                     }
+
+                    System.out.println("The frequency is: " + freq);
+                    System.out.println("The minFreq is: " + minFreq);
+                    System.out.println("The minFreqCount is: " + minFreqCount);
+                    System.out.println("The minFreqPages is: " + leastFrequentPages);
+                    System.out.println("The Queue is: " + fifoQueue);
+                    System.out.println("The LFU: " + lfuPage);
 
                     currentFrame = s.indexOf(lfuPage);
                     s.set(currentFrame, pages.get(i));

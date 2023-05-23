@@ -50,25 +50,22 @@ public class MFU extends PageReplacementSimulator {
                         }
                     }
 
-                    System.out.println("The frequency is: " + freq);
-                    System.out.println("The maxfreq is: " + maxFreq);
-                    System.out.println("The maxFreqCount is: " + maxFreqCount);
-                    System.out.println("The mostFreqPages is: " + mostFrequentPages);
-                    System.out.println("The Queue before is: " + fifoQueue);
-
-                    // Remove values from fifoQueue that are not in leastFrequentPages
                     // Find the first element among the nearest to the exit element that belongs to mostFrequentPages
                     int nearestToExit = -1;
-                    for (int page : fifoQueue) {
-                        if (mostFrequentPages.contains(page)) {
+                    List<Integer> tempList = new ArrayList<>(fifoQueue);
+
+                    for (int page : mostFrequentPages) {
+                        int index = tempList.indexOf(page);
+                        if (index != -1 && (nearestToExit == -1 || index < tempList.indexOf(nearestToExit))) {
                             nearestToExit = page;
-                            break;
                         }
                     }
+
                     int mfuPage = mostFrequentPages.get(0);
 
                     if (maxFreqCount > 1) {
                         mfuPage = nearestToExit;
+                        fifoQueue.poll();
                         fifoQueue.add(pages.get(i));
                     } else {
                         for (int j = 1; j < mostFrequentPages.size(); j++) {
@@ -78,9 +75,6 @@ public class MFU extends PageReplacementSimulator {
                         }
                     }
 
-
-                    System.out.println("The Queue after is: " + fifoQueue);
-                    System.out.println("The MFU: " + mfuPage);
                     currentFrame = s.indexOf(mfuPage);
                     s.set(currentFrame, pages.get(i));
                     freq.remove(mfuPage);
