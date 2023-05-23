@@ -74,13 +74,6 @@ public class LFU extends PageReplacementSimulator {
                         }
                     }
 
-                    System.out.println("The frequency is: " + freq);
-                    System.out.println("The minFreq is: " + minFreq);
-                    System.out.println("The minFreqCount is: " + minFreqCount);
-                    System.out.println("The minFreqPages is: " + leastFrequentPages);
-                    System.out.println("The Queue is: " + fifoQueue);
-                    System.out.println("The LFU: " + lfuPage);
-
                     currentFrame = s.indexOf(lfuPage);
                     s.set(currentFrame, pages.get(i));
                     freq.remove(lfuPage);
