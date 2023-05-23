@@ -16,12 +16,14 @@ public class MFU extends PageReplacementSimulator {
         ArrayList<Integer> s = new ArrayList<>(frameNumber);
         HashMap<Integer, Integer> freq = new HashMap<>();
         ArrayList<Integer> pages = string.getPages();
+        Queue<Integer> fifoQueue = new LinkedList<>();  // first to arrive queue for tiebreakers
         int pf = 0;
         for (int i = 0; i < pages.size(); i++) {
             if (s.size() < frameNumber) {
                 if (!s.contains(pages.get(i))) {
                     s.add(pages.get(i));
                     freq.put(pages.get(i), 1);
+                    fifoQueue.add(pages.get(i));
                     pf++;
                     status = "miss";
                     currentFrame = s.size() - 1 ;
@@ -33,18 +35,52 @@ public class MFU extends PageReplacementSimulator {
             } else {
                 if (!s.contains(pages.get(i))) {
                     int maxFreq = Collections.max(freq.values());
+                    int maxFreqCount = 0;
+
+                    for (int value : freq.values()) {
+                        if (value == maxFreq) {
+                            maxFreqCount++;
+                        }
+                    }
+
                     ArrayList<Integer> mostFrequentPages = new ArrayList<>();
                     for (Map.Entry<Integer, Integer> entry : freq.entrySet()) {
                         if (entry.getValue() == maxFreq) {
                             mostFrequentPages.add(entry.getKey());
                         }
                     }
-                    int mfuPage = mostFrequentPages.get(0);
-                    for (int j = 1; j < mostFrequentPages.size(); j++) {
-                        if (s.indexOf(mostFrequentPages.get(j)) < s.indexOf(mfuPage)) {
-                            mfuPage = mostFrequentPages.get(j);
+
+                    System.out.println("The frequency is: " + freq);
+                    System.out.println("The maxfreq is: " + maxFreq);
+                    System.out.println("The maxFreqCount is: " + maxFreqCount);
+                    System.out.println("The mostFreqPages is: " + mostFrequentPages);
+                    System.out.println("The Queue before is: " + fifoQueue);
+
+                    // Remove values from fifoQueue that are not in leastFrequentPages
+                    // Find the first element among the nearest to the exit element that belongs to mostFrequentPages
+                    int nearestToExit = -1;
+                    for (int page : fifoQueue) {
+                        if (mostFrequentPages.contains(page)) {
+                            nearestToExit = page;
+                            break;
                         }
                     }
+                    int mfuPage = mostFrequentPages.get(0);
+
+                    if (maxFreqCount > 1) {
+                        mfuPage = nearestToExit;
+                        fifoQueue.add(pages.get(i));
+                    } else {
+                        for (int j = 1; j < mostFrequentPages.size(); j++) {
+                            if (s.indexOf(mostFrequentPages.get(j)) < s.indexOf(mfuPage)) {
+                                mfuPage = mostFrequentPages.get(j);
+                            }
+                        }
+                    }
+
+
+                    System.out.println("The Queue after is: " + fifoQueue);
+                    System.out.println("The MFU: " + mfuPage);
                     currentFrame = s.indexOf(mfuPage);
                     s.set(currentFrame, pages.get(i));
                     freq.remove(mfuPage);
