@@ -51,7 +51,7 @@ public class CustomTable extends JTable {
         // Set the cell border
         if (getColumnCount() > 20 && getColumnCount() < 30) {
             marginSize = 3;
-        } else if (getColumnCount() >= 30) {
+        } else if (this.getColumnCount() >= 30) {
             marginSize = 2;
             setFont(new Font("Montserrat", Font.PLAIN, 10));
         }
