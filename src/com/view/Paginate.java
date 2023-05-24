@@ -10,7 +10,6 @@ public class Paginate {
     private MenuPanel menuPanel;
     private HowPanel howPanel;
     private InputPanel inputPanel;
-    private OutputPanel outputPanel;
     private Panel contentPane;
     private CardLayout cardLayout;
     private AudioPlayer audio;
@@ -25,7 +24,6 @@ public class Paginate {
         menuPanel = new MenuPanel();
         howPanel = new HowPanel();
         inputPanel = new InputPanel();
-        outputPanel = new OutputPanel();
 
         // setup the content pane and card layout
         contentPane = new Panel(true, "bg/menu-panel.png");
@@ -37,7 +35,6 @@ public class Paginate {
         contentPane.add(howPanel, "howPanel");
 
         contentPane.add(inputPanel, "inputPanel");
-        contentPane.add(outputPanel, "outputPanel");
 
         listenToMenu();
         listenToInput();
@@ -61,25 +58,18 @@ public class Paginate {
         howPanel.getMusicOffButton().addActionListener(e -> soundClick());
         howPanel.getHomeButton().addActionListener(e -> cardLayout.show(contentPane, "menuPanel" ));
     }
-
-    public void listenToOutput() {
-        outputPanel.getMusicOnButton().addActionListener(e -> soundClick());
-        outputPanel.getMusicOffButton().addActionListener(e -> soundClick());
-        outputPanel.getHomeButton().addActionListener(e -> {
-            cardLayout.show(contentPane, "menuPanel");
-        });
-    }
-
     public void listenToInput(){
         inputPanel.getMusicOnButton().addActionListener(e -> soundClick());
         inputPanel.getMusicOffButton().addActionListener(e -> soundClick());
-        inputPanel.getHomeButton().addActionListener(e -> cardLayout.show(contentPane, "menuPanel" ));
+        inputPanel.getHomeButton().addActionListener(e -> {
+            cardLayout.show(contentPane, "menuPanel" );
+            inputPanel.resetTables();
+        });
     }
 
     public void soundClick() {
         menuPanel.musicClick();
         inputPanel.musicClick();
-        outputPanel.musicClick();
         howPanel.musicClick();
         if (audio.isPlaying()) {
             audio.stop();

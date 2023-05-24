@@ -2,7 +2,6 @@ package view.component;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
@@ -12,8 +11,6 @@ public class CustomTable extends JTable {
     private final Color TABLE_PANE_COLOR = new Color(247, 245, 245);
     private final Font TABLE_FONT = new Font("Montserrat", Font.PLAIN, 14);
 
-    private Border cellBorder;
-
     public CustomTable(CustomTableModel tableModel) {
         super(tableModel);
         setRowHeight(30);
@@ -21,9 +18,6 @@ public class CustomTable extends JTable {
 
         //Set header
         setTableHeader(null);
-
-        //Set text to center
-        setCenter();
 
         setShowGrid(false);
         setIntercellSpacing(new Dimension(0, 0));
@@ -47,15 +41,21 @@ public class CustomTable extends JTable {
     @Override
     public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
         Component component = super.prepareRenderer(renderer, row, column);
+        //retain the HighlightCellRenderer cell bg on each column
+        component.setBackground(((JComponent) component).getBackground());
+
+        //center
+        ((JLabel) component).setHorizontalAlignment(SwingConstants.CENTER);
 
         int marginSize = 8;
         // Set the cell border
         if (getColumnCount() > 20 && getColumnCount() < 30) {
             marginSize = 3;
-        } else if (getColumnCount() >= 30) {
+        } else if (this.getColumnCount() >= 30) {
             marginSize = 2;
             setFont(new Font("Montserrat", Font.PLAIN, 10));
         }
+
 
         // Set different borders for header row and last column
         if (row == 0 || row == getRowCount() - 1) {
@@ -75,16 +75,6 @@ public class CustomTable extends JTable {
         return new DefaultCellEditor(f);
     }
 
-    public void setCenter() {
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-        for (int i = 0; i < getColumnModel().getColumnCount(); i++) {
-            getColumnModel().getColumn(i).setCellRenderer(renderer);
-
-        }
-    }
-
     public JScrollPane createTablePane(int x, int y, int width, int height) {
         JScrollPane scrollPane = new JScrollPane(this);
         scrollPane.setBounds(x, y, width, height);
@@ -102,8 +92,7 @@ public class CustomTable extends JTable {
 
     private void updateCellRenderer(int row, int col) {
         try {
-            setIntercellSpacing(new Dimension(0, 0));
-            setCenter();
+            repaint();
         } catch (Exception ex) {
 
         }
@@ -114,4 +103,15 @@ public class CustomTable extends JTable {
         setCellSelectionEnabled(false);
         return false;
     }
+
+    public void clearCellRendererBackground() {
+        for (int row = 0; row < getRowCount(); row++) {
+            for (int column = 0; column < getColumnCount(); column++) {
+                Component component = prepareRenderer(getDefaultRenderer(Object.class), row, column);
+                component.setBackground(null);
+            }
+        }
+    }
+
+
 }
