@@ -41,18 +41,16 @@ public class FIFO extends PageReplacementSimulator {
                 if (s.size() < frameNumber) {
                     s.add(pages.get(i));
                     currentFrame = s.size() - 1; // Set currentFrame to the index of the newly inserted page
-                    pf++;
-                    indexes.add(pages.get(i));
                     status = "miss";
                 } else {
-                    int val = indexes.peek();
-                    indexes.poll();
+                    int val = indexes.poll();
                     currentFrame = s.indexOf(val);
                     s.set(currentFrame, pages.get(i));
-                    indexes.add(pages.get(i));
-                    pf++;
                     status = "miss";
                 }
+                pf++;
+                indexes.add(pages.get(i));
+
             } else {
                 currentFrame = s.indexOf(pages.get(i));
                 status = "hit";
