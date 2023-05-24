@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import view.component.CustomTable;
 
@@ -27,7 +28,6 @@ public class Export {
                 CustomTable table = tables[i];
                 String tableTitle = tableTitles[i];
 
-                PDType0Font font = PDType0Font.load(document, getClass().getResourceAsStream("/font/Montserrat-Regular.ttf"));
 
                 // Create a new page for each table
                 PDPage page = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth())); // Set the page orientation to landscape
@@ -65,7 +65,7 @@ public class Export {
 
                 // Write the table title
                 contentStream.beginText();
-                contentStream.setFont(font, 20);
+                contentStream.setFont(PDType1Font.HELVETICA, 20);
                 contentStream.newLineAtOffset(marginLeft, startY + adjustedImageHeight + 15);
                 contentStream.showText(tableTitle);
                 contentStream.endText();
