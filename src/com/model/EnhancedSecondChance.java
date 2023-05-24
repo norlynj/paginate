@@ -1,8 +1,6 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 
 public class EnhancedSecondChance extends PageReplacementSimulator {
     private static int[] referenceString;
@@ -73,10 +71,11 @@ public class EnhancedSecondChance extends PageReplacementSimulator {
                     } else {
                         pointer = replacementPointer;
                     }
+                    currentFrame = pointer;
                 } else {
+                    currentFrame = pointer + 1; // highlight the last column
                     pointer = replacementPointer;
                 }
-                currentFrame = pointer;
             }
 
             ArrayList<Integer> column = new ArrayList<>();
@@ -89,7 +88,6 @@ public class EnhancedSecondChance extends PageReplacementSimulator {
             steps.add(new Step(i, currentFrame, status, new ArrayList<>(column), pageFaults));
         }
         this.pageFaults = pageFaults;
-        printThreeColumns(memory, referenceBit, modificationBit, pageFaults, "Enhanced Second Chance Algorithm: ");
     }
 
 
@@ -143,28 +141,5 @@ public class EnhancedSecondChance extends PageReplacementSimulator {
             }
         }
         return -1;
-    }
-
-    private static void printThreeColumns(int[][] memory,int[][] refBit,int[][] modifyBit, int faults,String s){
-
-        System.out.println("");
-        for(int i=0; i<25; i++){
-            System.out.print("--");
-        }
-        System.out.println("");
-        System.out.println("Reference String:");
-        for (int i = 0; i < referenceString.length; i++) {
-            System.out.printf("%6d   ",referenceString[i]);
-        }
-        System.out.println("\n");
-
-        System.out.println(s);
-        for(int i = 0; i < framesNum; i++){
-            for(int j = 0; j < referenceString.length; j++)
-                System.out.printf("%4d %d %d ",memory[j][i],refBit[j][i],modifyBit[j][i]);
-            System.out.println("");
-        }
-
-        System.out.println("The number of Faults: " + faults);
     }
 }
