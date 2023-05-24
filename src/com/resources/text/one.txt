@@ -1,2 +1,2 @@
-Page Reference String: 1, 2, 3, 4, 5, 6, 19, 7, 8, 1, 4, 1, 8
-Number of Frames: 5
+Page Reference String: 2, 0, 5, 3, 0, 6, 1, 6, 3, 0, 2, 4, 0, 6, 9, 4, 3
+Number of Frames: 4
