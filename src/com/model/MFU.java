@@ -76,7 +76,9 @@ public class MFU extends PageReplacementSimulator {
                     }
 
                     currentFrame = s.indexOf(mfuPage);
-                    s.set(currentFrame, pages.get(i));
+                    if (currentFrame != -1) {
+                        s.set(currentFrame, pages.get(i));
+                    }
                     freq.remove(mfuPage);
                     freq.put(pages.get(i), 1);
 
