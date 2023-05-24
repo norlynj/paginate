@@ -51,7 +51,7 @@ public class InputPanel extends Panel {
     private PageReferenceString pageRefString;
     PageReplacementSimulator[] simulators;
     PageReplacementSimulator simulator;
-    private boolean validStringInputs = true, validFrameNum = true;
+    private boolean validStringInputs = false, validFrameNum = true;
     private JSlider slider;
     private int sliderValue = 2000;
     private Timer timer;
@@ -175,6 +175,8 @@ public class InputPanel extends Panel {
 
             // Set the preferred size of the scroll pane to allow table height adjustment
             scrollPanes[i].setPreferredSize(new Dimension(scrollPanes[i].getPreferredSize().width, tables[i].getRowCount()*30));
+//            scrollPanes[i].getVerticalScrollBar().setBackground(new Color(77, 58, 104));
+            scrollPanes[i].getVerticalScrollBar().setPreferredSize(new Dimension(0, 10));
         }
 
         // Create a scroll pane for the tables panel
@@ -182,6 +184,7 @@ public class InputPanel extends Panel {
         tablesScrollPane.setBorder(BorderFactory.createEmptyBorder());
         tablesScrollPane.getViewport().setBackground(bgColor);
         tablesScrollPane.setBounds(53, 336, 993, 385);
+        tablesScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(10, 10));
     }
 
 
